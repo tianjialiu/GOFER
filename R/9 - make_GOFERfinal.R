@@ -152,3 +152,10 @@ for (satMode in c("gofer_combined","gofer_east","gofer_west")) {
   write.csv(fireSummary_list,paste0(dataFolder,"/",satMode_final,"/",satMode_shortName,"_summary.csv"),
             row.names=F)
 }
+
+# write fireData.csv, matching column names of final GOFER data
+fireDataOutput <- fireData %>% 
+  dplyr::select(FireName,Year,State,Acres,GOES_UTC,local_tz,local_tzGMT) %>%
+  dplyr::rename(fname="FireName",fyear="Year",state="State",acres_official="Acres",GOESIg_UTC="GOES_UTC")
+
+write.csv(fireDataOutput,paste0(dataFolder,"/fireData.csv"),row.names=F)
