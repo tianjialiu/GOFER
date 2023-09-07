@@ -26,6 +26,10 @@ var fireParamsYrList = fireParamsList[year];
 var fireDict = fireParamsYrList[fireName];
 var fireNameYr = fireName.split(' ').join('_') + '_' + year;
 
+// Input AOI
+// can replace this with a custom geometry
+var AOI = fireDict.AOI; 
+
 var goesEast_col = ee.ImageCollection('NOAA/GOES/' + goesEast_no + '/FDCF');
 var goesWest_col = ee.ImageCollection('NOAA/GOES/' + goesWest_no + '/FDCF');
 
@@ -40,17 +44,17 @@ var goesEastrand = ee.Image.random(0).multiply(1e4).toInt()
 var goesWestrand = ee.Image.random(20).multiply(1e4).toInt()
   .reproject({crs: goesWestproj,scale: goesWestproj.nominalScale()});
 
-var goesEast_randVec = goesEastrand.reduceToVectors({geometry: fireDict.AOI.buffer(10000),
+var goesEast_randVec = goesEastrand.reduceToVectors({geometry: AOI.buffer(10000),
     crs:'EPSG:4326', scale:10, maxPixels:1e12})
-  .filterBounds(fireDict.AOI);
-var goesWest_randVec = goesWestrand.reduceToVectors({geometry: fireDict.AOI.buffer(10000),
+  .filterBounds(AOI);
+var goesWest_randVec = goesWestrand.reduceToVectors({geometry: AOI.buffer(10000),
     crs:'EPSG:4326', scale:10, maxPixels:1e12})
-  .filterBounds(fireDict.AOI);
+  .filterBounds(AOI);
 
 var combined_randVec = goesEastrand.add(goesWestrand)
-  .reduceToVectors({geometry: fireDict.AOI.buffer(10000),
+  .reduceToVectors({geometry: AOI.buffer(10000),
     crs:'EPSG:4326', scale:10, maxPixels:1e12})
-  .filterBounds(fireDict.AOI);
+  .filterBounds(AOI);
   
 var get_kernelRes = function(randVec) {
   var randVec_areaRes = randVec
@@ -67,7 +71,7 @@ var get_kernelRes = function(randVec) {
   
 var goesEast_pt_everyOther = ee.Image.random(0).multiply(1e4).toInt()
   .reproject({crs: goesEastproj, scale: goesEastproj.nominalScale().multiply(2)})
-  .reduceToVectors({geometry: fireDict.AOI.buffer(1e4),
+  .reduceToVectors({geometry: AOI.buffer(1e4),
     maxPixels:1e12, geometryType:'centroid'})
   .map(function(x) {
     var coords = ee.Feature(x).geometry().coordinates();
@@ -84,7 +88,7 @@ var goesEast_randVec_shade = goesEast_randVec.map(function(grid) {
 
 var goesWest_pt_everyOther = ee.Image.random(0).multiply(1e4).toInt()
   .reproject({crs: goesWestproj, scale: goesWestproj.nominalScale().multiply(2)})
-  .reduceToVectors({geometry: fireDict.AOI.buffer(1e4),
+  .reduceToVectors({geometry: AOI.buffer(1e4),
     maxPixels:1e12, geometryType:'centroid'})
   .map(function(x) {
     var coords = ee.Feature(x).geometry().coordinates();
@@ -108,7 +112,7 @@ Map.addLayer(ee.Image().byte()
   .paint(goesWest_randVec_shade.filter(ee.Filter.eq('shade',1)),0),
   {palette: ['red'], opacity:0.5});
 Map.addLayer(combined_randVec);
-Map.centerObject(fireDict.AOI);
+Map.centerObject(AOI);
 
 print(get_kernelRes(goesEast_randVec),
   get_kernelRes(goesWest_randVec),

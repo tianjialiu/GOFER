@@ -11,7 +11,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (tliu@ucar.edu)
-// Last updated: August 31, 2023
+// Last updated: September 7, 2023
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -430,8 +430,16 @@ var mainTitle = ui.Label('GOFER Database Visualization',
   {stretch: 'horizontal', textAlign: 'left', fontWeight: 'bold',
     fontSize: '24px', backgroundColor:'FFFFFF', margin: '6px 8px 3px 15px'});
 var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
-  {stretch: 'horizontal', textAlign: 'left',
-    fontSize: '16px', color: '#777', margin: '0 8px 6px 15px'});
+  {textAlign: 'left',
+    fontSize: '16px', color: '#777', margin: '0 18px 6px 15px'});
+    
+var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327265');
+var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
+
+var subTitlelinks = ui.Panel([
+  subTitle,
+  ui.Panel([dataLabel, codeLabel], ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'})
+],ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'});
 
 // default app configuration
 var fireName = 'Creek';
@@ -492,7 +500,7 @@ var fireSelectPanel = ui.Panel([yearSelectInfo,fireYrSelect,
   ui.Panel.Layout.Flow('horizontal'));
   
 var mainPanel = ui.Panel([
-  ui.Panel([mainTitle,subTitle],
+  ui.Panel([mainTitle,subTitlelinks],
     ui.Panel.Layout.Flow('vertical'),{stretch:'horizontal'}),fireSelectPanel],
   ui.Panel.Layout.Flow('horizontal'),
   {stretch: 'horizontal'});
