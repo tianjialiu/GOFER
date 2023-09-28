@@ -114,4 +114,4 @@ https://code.earthengine.google.com/?accept_repo=users/tl2581/GOFER
 * For fstate, both rfline and cfline have fstate columns, e.g. rfline_fstate; if the fire line is dormant at the timestep (fstate = 0), then that timestep is filled with the most recent cfline or the most immediate rfline after the timestep; to get the original flinelen, multiply by the corresponding fstate
 
 ## Publications
-Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo. Systematically tracking the hourly progression of large wildfires using GOES satellite observations. (submitted)
+Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo. Systematically tracking the hourly progression of large wildfires using GOES satellite observations. (in review at ESSD) https://doi.org/10.5194/essd-2023-389

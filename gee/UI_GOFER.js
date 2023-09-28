@@ -11,7 +11,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (tliu@ucar.edu)
-// Last updated: September 7, 2023
+// Last updated: September 28, 2023
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -435,10 +435,11 @@ var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
     
 var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327265');
 var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
+var paperLabel = ui.Label('[Preprint]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-2023-389');
 
 var subTitlelinks = ui.Panel([
   subTitle,
-  ui.Panel([dataLabel, codeLabel], ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'})
+  ui.Panel([dataLabel, codeLabel,paperLabel], ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'})
 ],ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'});
 
 // default app configuration
