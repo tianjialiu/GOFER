@@ -176,22 +176,22 @@ var fireParamsList = {
       Structures: 'Glass'
     },
     'July Complex': {
-      // aka Caldwell Fire
+      // aka Caldwell, Allen, Dalton (too small for GOES)
       // CalFIRE: https://www.fire.ca.gov/incidents/2020/7/24/july-complex/
       // InciWeb: https://inciweb.nwcg.gov/incident/6881/
       state: 'CA',
       official: 83261,
       ignition: ee.Geometry.Point([-121.477,41.699]), 
-      AOI: ee.Geometry.Rectangle([-121.71,41.60,-121.25,41.88]),
+      AOI: ee.Geometry.Rectangle([-121.71,41.31,-120.98,41.88]),
       stDate: 'July 22, 2020 10:15 AM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2020-07-22 17'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-08-01 02'),
       nHour: 225,
       nDay: 10,
-      kernels: [3513,2660,1738],
-      MTBS: ['CA4169912147720200722'],
-      FEDS: [309],
-      FRAP: [21756]
+      kernels: [3500,2657,1726],
+      MTBS: ['CA4169912147720200722','CA4136412109120200722','CA4173712105820200723'],
+      FEDS: [309,230,231],
+      FRAP: [21756,21675,21676]
     },
     'LNU Lightning Complex': {
       // aka Hennessey, Walbridge, Meyers (too small for GOES)

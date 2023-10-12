@@ -11,7 +11,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (tliu@ucar.edu)
-// Last updated: September 28, 2023
+// Last updated: October 12, 2023
 */
 // =================================================================
 // **********************   --    Code    --   *********************

@@ -43,15 +43,9 @@ var inFiresList = [
   ['Windy','2021']
 ];
 
-// Input modes:
-// 1. 'C' (Combined, both GOES-East/West)
-// 2. 'E' (East, only GOES-East)
-// 3. 'W' (West, only GOES-West)
-var satMode = 'C';
-
 // remove pieces of fire perimeter that do not belong to the fire
 // according to the ground truth dataset
-var removeStrayBool = true; 
+var removeStrayBool = false; 
 
 // Metadata
 var fireInfo = require('users/tl2581/GOFER:largeFires_metadata.js');

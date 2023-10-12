@@ -183,8 +183,6 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var year = inFiresList[fireIdx][1]; 
 
   // Time and location of the fire
-  var fireInfo = require('users/tl2581/westUSFires:largeFires_metadata.js');
-  
   var yrList = fireInfo.yrList;
   var fireYrList = fireInfo.fireYrList;
   var fireParamsList = fireInfo.fireParamsList;
