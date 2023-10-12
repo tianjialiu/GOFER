@@ -128,7 +128,7 @@ var fireParamsList = {
       // InciWeb: https://inciweb.nwcg.gov/incident/7028/
       state: 'CA',
       official: 86509,
-      ignition: ee.Geometry.Point([-120.680556,40.061389]), 
+      ignition: ee.Geometry.Point([-122.22275,37.17162]), 
       AOI: ee.Geometry.Rectangle([-122.44,37.0,-122.04,37.3]),
       stDate: 'August 16, 2020 8:00 AM', // CalFIRE
       start: ee.Date.parse('Y-MM-dd HH','2020-08-16 15'), 
