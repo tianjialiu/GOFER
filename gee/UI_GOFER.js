@@ -11,7 +11,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (tliu@ucar.edu)
-// Last updated: October 12, 2023
+// Last updated: January 19, 2024
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -426,7 +426,7 @@ var mapGrid = ui.Panel([map_panels],
   ui.Panel.Layout.Flow('horizontal'), {stretch: 'both'}
 );
   
-var mainTitle = ui.Label('GOFER Database Visualization',
+var mainTitle = ui.Label('GOFER Product Visualization',
   {stretch: 'horizontal', textAlign: 'left', fontWeight: 'bold',
     fontSize: '24px', backgroundColor:'FFFFFF', margin: '6px 8px 3px 15px'});
 var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
@@ -435,7 +435,7 @@ var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
     
 var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327264');
 var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
-var paperLabel = ui.Label('[Preprint]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-2023-389');
+var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-2023-389');
 
 var subTitlelinks = ui.Panel([
   subTitle,

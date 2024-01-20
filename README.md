@@ -1,7 +1,7 @@
 # GOFER
 GOFER: GOES-Observed Fire Event Representation
 
-The GOFER algorithm uses geostationary satellite observations of active fires from GOES-East and GOES-West to map the hourly progression of large wildfires (over 50,000 acres or 202 sq. km). GOES observes North and South America with a spatial resolution of 2 km at the equator and at a frequency of 10-15 minutes for the full disk view. Along with the fire perimeter, we derive the active fire lines and fire spread rates. We tested the GOFER algorithm on a set of 28 wildfires in California from 2019-2021 and produced three versions of the dataset: GOFER-Combined, GOFER-East, and GOFER-West. GOFER-Combined uses both GOES-East and GOES-West observations, while GOFER-East and GOFER-West use only GOES-East and only GOES-West observations, respectively. We find that GOFER performs reasonably well compared to final perimeters from California's Fire and Resource Assessment Program (FRAP) and 12-hourly perimeters from the Fire Event Data Suite (FEDS), derived from 375-m active fire observations. See our [GOFER Database Visualization](https://globalfires.earthengine.app/view/gofer) app on Earth Engine Apps for an overview of the dataset, alongside other datasets, such as FEDS and FRAP perimeters and 30-m burn severity from Monitoring Trends in Burn Severity (MTBS). The dataset of 28 large wildfires in California from 2019-2021 is available on [Zenodo](https://doi.org/10.5281/zenodo.8327264).
+The GOFER algorithm uses geostationary satellite observations of active fires from GOES-East and GOES-West to map the hourly progression of large wildfires (over 50,000 acres or 202 sq. km). GOES observes North and South America with a spatial resolution of 2 km at the equator and at a frequency of 10-15 minutes for the full disk view. Along with the fire perimeter, we derive the active fire lines and fire spread rates. We tested the GOFER algorithm on a set of 28 wildfires in California from 2019-2021 and produced three versions of the product: GOFER-Combined, GOFER-East, and GOFER-West. GOFER-Combined uses both GOES-East and GOES-West observations, while GOFER-East and GOFER-West use only GOES-East and only GOES-West observations, respectively. We find that GOFER performs reasonably well compared to final perimeters from California's Fire and Resource Assessment Program (FRAP) and 12-hourly perimeters from the Fire Event Data Suite (FEDS), derived from 375-m active fire observations. See our [GOFER Product Visualization](https://globalfires.earthengine.app/view/gofer) app on Earth Engine Apps for an overview of the product, alongside other products and datasets, such as FEDS and FRAP perimeters and 30-m burn severity from Monitoring Trends in Burn Severity (MTBS). The product of 28 large wildfires in California from 2019-2021 is available on [Zenodo](https://doi.org/10.5281/zenodo.8327264).
 
 ![banner image](https://github.com/tianjialiu/GOFER/blob/main/docs/imgs/GOFER.png)
 
@@ -85,7 +85,7 @@ GOFER/
 https://code.earthengine.google.com/?accept_repo=users/tl2581/GOFER
 ```
 
-### Dataset Description
+### Product Description
 | <b>Name</b> | <b>Short Name</b> | <b>Units</b> |
 | :--- | :--- | :--- |
 | <b>Global variables</b> | | |		
@@ -114,4 +114,4 @@ https://code.earthengine.google.com/?accept_repo=users/tl2581/GOFER
 * For fstate, both rfline and cfline have fstate columns, e.g. rfline_fstate; if the fire line is dormant at the timestep (fstate = 0), then that timestep is filled with the most recent cfline or the most immediate rfline after the timestep; to get the original flinelen, multiply by the corresponding fstate
 
 ## Publications
-Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo. Systematically tracking the hourly progression of large wildfires using GOES satellite observations. (in review at ESSD) https://doi.org/10.5194/essd-2023-389
+Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo. Systematically tracking the hourly progression of large wildfires using GOES satellite observations. (accepted at ESSD) https://doi.org/10.5194/essd-2023-389
