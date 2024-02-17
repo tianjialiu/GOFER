@@ -8,7 +8,8 @@ The GOFER algorithm uses geostationary satellite observations of active fires fr
 ### Code Structure
 | Code | Description | 
 | :--- | :--- |
-| `largeFires_metadata.js` | dictionary of key metadata for all fires |
+| `largeFires_metadata.js` | dictionary of key metadata for all fires in EE |
+| `fireData.csv` | dictionary of key metadata for all fires in R |
 | 0a - `Calc_staging.js` | set temporal and spatial constraints for each fire by manually inspecting GOES active fire pixels and timeseries |
 | 0b - `Calc_kernelRes.js`  | calculate the kernel radius for smoothing based on the GOES spatial resolution |
 | 1a - `Export_FireConf.js` | export GOES fire detection confidence |
@@ -43,6 +44,7 @@ GOFER/
 Local
 ```
 GOES/
+	fireData.csv
 	ee_fireProg_chunks/
 	ee_fireProg_temp/
 	ee_rfireLine/
@@ -114,4 +116,4 @@ https://code.earthengine.google.com/?accept_repo=users/tl2581/GOFER
 * For fstate, both rfline and cfline have fstate columns, e.g. rfline_fstate; if the fire line is dormant at the timestep (fstate = 0), then that timestep is filled with the most recent cfline or the most immediate rfline after the timestep; to get the original flinelen, multiply by the corresponding fstate
 
 ## Publications
-Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo. Systematically tracking the hourly progression of large wildfires using GOES satellite observations. (accepted at ESSD) https://doi.org/10.5194/essd-2023-389
+Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo. Systematically tracking the hourly progression of large wildfires using GOES satellite observations. (in press at ESSD) https://doi.org/10.5194/essd-2023-389
