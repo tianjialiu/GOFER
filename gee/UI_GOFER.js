@@ -2,7 +2,8 @@
 var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
     FRAP = ee.FeatureCollection("projects/GlobalFires/FRAP"),
     MTBS_BurnSeverity = ee.ImageCollection("projects/GlobalFires/MTBS/MTBS_BurnSeverity_CONUS"),
-    MTBS = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims");
+    MTBS = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims"),
+    FEDS = ee.FeatureCollection("projects/GlobalFires/GOFER/FEDS_2019_2021");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 // *****************************************************************
 // =================================================================
@@ -11,7 +12,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (tliu@ucar.edu)
-// Last updated: January 19, 2024
+// Last updated: February 22, 2024
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -41,10 +42,6 @@ var goferVersionList = {
 
 var UTCtoLT = function(date,tz) {
   return ee.Date(ee.Date(date,'UTC')).format('MMM d, Y HH',tz);
-};
-
-var setMonth_FEDS = function(x) {
-  return x.set('Month',ee.Date(x.get('t')).get('month'));
 };
 
 var calcIOU = function(x,y) {
@@ -705,22 +702,9 @@ goButton.onClick(function() {
   var minTS = GOFER_fireProg.aggregate_min('timeStep');
   var maxTS = GOFER_fireProg.aggregate_max('timeStep');
   
-  var FEDS = ee.FeatureCollection('projects/GlobalFires/FEDS/FEDSv2_perimeter_' + year);
-  
-  var FEDS_fireProg = FEDS.filter(ee.Filter.inList('FRAPid',fireDict.FEDS))
-    .map(setMonth_FEDS).filter(ee.Filter.gte('Month',ee.Date(fireDict.start).get('month')));
-
-  FEDS_fireProg = ee.FeatureCollection(FEDS_fireProg.distinct('t'))
-    .map(function(inFEDS) {
-      inFEDS = ee.Feature(inFEDS);
-      var combineFEDS = FEDS_fireProg.filter(ee.Filter.eq('t',inFEDS.get('t')))
-        .union().geometry();
-    
-      return ee.Feature(inFEDS).setGeometry(combineFEDS);
-    });
-  
-  FEDS_fireProg = FEDS_fireProg
-    .map(setTS_FEDS).sort('timeStep',false)
+  var FEDS_fireProg = FEDS.filter(ee.Filter.eq('fname',fireName))
+    .filter(ee.Filter.eq('fyear',year))
+    .sort('timeStep',false)
     .filter(ee.Filter.gte('timeStep',0));
     
   var area95 = ee.Number(GOFER_fireProg.aggregate_max('area_km2')).multiply(0.95);
