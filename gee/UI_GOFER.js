@@ -430,7 +430,7 @@ var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
   {textAlign: 'left',
     fontSize: '16px', color: '#777', margin: '0 18px 6px 15px'});
     
-var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327264');
+var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-16-1395-2024');
 var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
 var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-2023-389');
 
