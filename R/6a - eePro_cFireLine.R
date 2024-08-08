@@ -7,7 +7,7 @@
 # cfireLine
 # ee_cfireLine_chunks -> gofer_xxx/cfireLine
 # --------------------------------------------
-# @author: Tianjia Liu (tliu@ucar.edu)
+# @author Tianjia Liu (embrslab@gmail.com)
 # ============================================
 source("/Users/TLiu/Google Drive/My Drive/github/GOFER/R/globalParams.R")
 setwd(tempFolder)

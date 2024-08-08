@@ -1,3 +1,10 @@
+# ============================================
+# make_GOFERfinal.R
+# --------------------------------------------
+# export the final GOFER product
+# --------------------------------------------
+# @author Tianjia Liu (embrslab@gmail.com)
+# ============================================
 source("/Users/TLiu/Google Drive/My Drive/WestUSFires/scripts/globalParams.R")
 library("rgdal"); library("raster"); library("tidyverse"); library("sf"); library("lemon")
 setwd("/Users/TLiu/Google Drive/My Drive/WestUSFires/GOES/")

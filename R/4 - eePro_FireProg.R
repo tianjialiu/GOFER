@@ -6,7 +6,7 @@
 # plot of the fire progression
 # ee_fireProg_chunks -> ee_fireProg_temp
 # --------------------------------------------
-# @author: Tianjia Liu (tliu@ucar.edu)
+# @author Tianjia Liu (embrslab@gmail.com)
 # ============================================
 source("/Users/TLiu/Google Drive/My Drive/github/GOFER/R/globalParams.R")
 setwd(tempFolder)
