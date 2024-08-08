@@ -2,14 +2,14 @@
 var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
     MTBS = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
-// =======================================
+// =========================================
 // Export_ParamSens.js
-// ---------------------------------------
+// -----------------------------------------
 // optimization of confidence threshold
 // and parallax displacement factor
-// ---------------------------------------
-// @author: Tianjia Liu (tliu@ucar.edu)
-// =======================================
+// -----------------------------------------
+// @author Tianjia Liu (embrslab@gmail.com)
+// =========================================
 
 // List of fires for optimization
 var inFiresList = [

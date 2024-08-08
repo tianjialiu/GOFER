@@ -1,11 +1,12 @@
-// =======================================
+// =========================================
 // Export_FireProgStats.js
-// ---------------------------------------
+// -----------------------------------------
 // export ancillary stats for fire
 // perimeters
 // fireProg, rfireLine -> fireProgStats
-// ---------------------------------------
-// @author: Tianjia Liu (tliu@ucar.edu)
+// -----------------------------------------
+// @author Tianjia Liu (embrslab@gmail.com)
+// =========================================
 
 var inFiresList = [
   ['Kincade','2019'],

@@ -1,11 +1,12 @@
-// =======================================
+// =========================================
 // Export_FireIg.js
-// ---------------------------------------
+// -----------------------------------------
 // export fire perimeters with ignition
 // points as centroids of next polygon
 // fireProg -> fireIg
-// ---------------------------------------
-// @author: Tianjia Liu (tliu@ucar.edu)
+// -----------------------------------------
+// @author Tianjia Liu (embrslab@gmail.com)
+// =========================================
 
 var inFiresList = [
   ['Kincade','2019'],

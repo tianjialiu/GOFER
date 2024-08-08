@@ -1,16 +1,16 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
-    FRAP = ee.FeatureCollection("projects/GlobalFires/FRAP");
+    FRAP = ee.FeatureCollection("projects/GlobalFires/FRAP/FRAP_fire22-1");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
-// =======================================
+// =========================================
 // Export_FireProgQA.js
-// ---------------------------------------
+// -----------------------------------------
 // post-processing for fire progression
 // perimeters
 // fireProg_temp -> fireProg
-// ---------------------------------------
-// @author: Tianjia Liu (tliu@ucar.edu)
-// =======================================
+// -----------------------------------------
+// @author Tianjia Liu (embrslab@gmail.com)
+// =========================================
 
 var inFiresList = [
   ['Kincade','2019'],

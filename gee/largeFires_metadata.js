@@ -1,11 +1,11 @@
-// =======================================
+// =========================================
 // largeFires_metadata.js
-// ---------------------------------------
+// -----------------------------------------
 // metadata dictionary for each large fire
 // and ancillary parameters
-// ---------------------------------------
-// @author: Tianjia Liu (tliu@ucar.edu)
-// =======================================
+// -----------------------------------------
+// @author Tianjia Liu (embrslab@gmail.com)
+// =========================================
 
 var today = new Date();
 var projFolder = 'projects/GlobalFires/GOFER/';
@@ -44,7 +44,8 @@ var fireParamsList = {
       kernels: [3453,2550,1725], // GOES-East, GOES-West, Combined
       MTBS: ['CA3879612276720191023'], // Fire_ID
       FEDS: [20993], // FRAPid
-      FRAP: [42478] // OBJECTID
+      FRAP: [42478], // OBJECTID
+      DINS: ['CALNU 019376'] // INCIDENTNU
     },
     'Walker': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2022/9/1/walker-fire/
@@ -86,7 +87,8 @@ var fireParamsList = {
       kernels: [3519,2586,1710],
       MTBS: ['CA3966012280920200817'],
       FEDS: [296],
-      FRAP: [21743]
+      FRAP: [21743],
+      DINS: ['CATGU 008864','CATGU 008913','CAMEU 010843','CAMNF 000753']
     },
     'Bobcat': {
       // InciWeb: https://inciweb.nwcg.gov/incident/7152/
@@ -102,7 +104,8 @@ var fireParamsList = {
       kernels: [3071,2485,1651],
       MTBS: ['CA3424811795920200906'],
       FEDS: [197],
-      FRAP: [21641]
+      FRAP: [21641],
+      DINS: ['CAANF 003687']
     },
     'Creek': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2020/9/4/creek-fire/
@@ -121,7 +124,7 @@ var fireParamsList = {
       MTBS: ['CA3720111927220200905'],
       FEDS: [243],
       FRAP: [21688],
-      Structures: 'Creek'
+      DINS: ['CAFKU 013369']
     },
     'CZU Lightning Complex': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2020/8/16/czu-lightning-complex-including-warnella-fire/
@@ -138,7 +141,8 @@ var fireParamsList = {
       kernels: [3365,2511,1668],
       MTBS: ['CA3726212222320200816'],
       FEDS: [21],
-      FRAP: [21462]
+      FRAP: [21462],
+      DINS: ['CACZU 005205']
     },
     'Dolan': {
       // InciWeb: https://inciweb.nwcg.gov/incident/7018/
@@ -173,7 +177,7 @@ var fireParamsList = {
       MTBS: ['CA3855412253120200927'],
       FEDS: [222],
       FRAP: [21667],
-      Structures: 'Glass'
+      DINS: ['CALNU 015947']
     },
     'July Complex': {
       // aka Caldwell, Allen, Dalton (too small for GOES)
@@ -210,7 +214,7 @@ var fireParamsList = {
       MTBS: ['CA3850412233720200817','CA3867312307820200817','CA3851412322420200817'],
       FEDS: [219,220,221],
       FRAP: [21664,21665,21666],
-      Structures: 'LNU Complex'
+      DINS: ['CALNU 013407']
     },
     'North Complex': {
       // InciWeb: https://inciweb.nwcg.gov/incident/6997/
@@ -228,7 +232,7 @@ var fireParamsList = {
       MTBS: ['CA4009112093120200817'],
       FEDS: [238],
       FRAP: [21683],
-      Structures: 'North Complex'
+      DINS: ['CABTU 010751']
     },
     'Red Salmon Complex': {
       // InciWeb: https://inciweb.nwcg.gov/incident/6891/
@@ -263,7 +267,7 @@ var fireParamsList = {
       MTBS: ['CA3742412156820200816'],
       FEDS: [174],
       FRAP: [21616],
-      Structures: 'SCU Complex'
+      DINS: ['CASCU 005740']
     },
     'Slater and Devil': {
       // InciWeb: https://inciweb.nwcg.gov/incident/7173/
@@ -281,7 +285,8 @@ var fireParamsList = {
       kernels: [3637,2648,1734],
       MTBS: ['CA4185812335420200908','CA4190412319120200909'],
       FEDS: [249,261], // FEDS cuts off at CA/OR border,
-      FRAP: [21707,21695]
+      FRAP: [21707,21695],
+      DINS: ['CAKNF 007035']
     },
     'SQF Complex': {
       // aka Castle
@@ -302,7 +307,7 @@ var fireParamsList = {
       MTBS: ['CA3616111845220200819'],
       FEDS: [239],
       FRAP: [21684],
-      Structures: 'SQF Complex'
+      DINS: ['CASQF 002541']
     },
     'W-5 Cold Springs': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2020/8/23/w-5-cold-springs/
@@ -336,7 +341,8 @@ var fireParamsList = {
       kernels: [3519,2605,1755],
       MTBS: ['CA4054112256820200927'],
       FEDS: [119],
-      FRAP: [21560]
+      FRAP: [21560],
+      DINS: ['CASHU 009978']
     }
   },
   '2021': {
@@ -360,7 +366,7 @@ var fireParamsList = {
       MTBS: ['CA4150012192920210801'],
       FEDS: [21598],
       FRAP: [43096],
-      Structures: 'Antelope'
+      DINS: ['CAKNF 006454']
     },
     'Beckwourth Complex': {
       // aka Sugar
@@ -381,7 +387,7 @@ var fireParamsList = {
       MTBS: ['CA3983912034520210702'],
       FEDS: [21585],
       FRAP: [43079,43197],
-      Structures: 'Beckwourth Complex'
+      DINS: ['CAPNF 001064']
     },
     'Caldor': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2021/8/14/caldor-fire/
@@ -402,7 +408,7 @@ var fireParamsList = {
       MTBS: ['CA3858612053820210815'],
       FEDS: [21604],
       FRAP: [43102],
-      Structures: 'Caldor'
+      DINS: ['CAENF 024030']
     },
     'Dixie': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/13/dixie-fire/
@@ -428,7 +434,7 @@ var fireParamsList = {
       MTBS: ['CA3987612137920210714'],
       FEDS: [21684],
       FRAP: [43182],
-      Structures: 'Dixie'
+      DINS: ['CABTU 009205']
     },
     'KNP Complex': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2021/9/10/knp-complex/
@@ -480,7 +486,7 @@ var fireParamsList = {
       MTBS: ['CA4035012303620210730'],
       FEDS: [21595],
       FRAP: [43091],
-      Structures: 'McFarland'
+      DINS: ['CASHF 001175']
     },
     'Monument': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/30/monument-fire/
@@ -497,7 +503,8 @@ var fireParamsList = {
       kernels: [3569,2609,1744],
       MTBS: ['CA4075212333720210731'],
       FEDS: [21615],
-      FRAP: [43113]
+      FRAP: [43113],
+      DINS: ['CASHF 001187']
     },
     'River Complex': {
       // aka Haypress and Cronan
@@ -533,7 +540,7 @@ var fireParamsList = {
       MTBS: ['CA3862811985720210704'],
       FEDS: [21670], // FEDS cuts off at CA/NV border
       FRAP: [43168],
-      Structures: 'Tamarack'
+      DINS: ['NVHTF 030419']
     },
     'Windy': {
       // CalFIRE: https://www.fire.ca.gov/incidents/2021/9/9/windy-fire/
@@ -550,7 +557,8 @@ var fireParamsList = {
       kernels: [3151,2528,1702],
       MTBS: ['CA3604711863120210910'],
       FEDS: [21655],
-      FRAP: [43153]
+      FRAP: [43153],
+      DINS: ['CATUU 000786']
     }
   }
 };

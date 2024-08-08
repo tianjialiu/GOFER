@@ -2,14 +2,14 @@
 var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
     mtbs = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
-// =======================================
+// =========================================
 // Calc_StagingAOI.js
-// ---------------------------------------
+// -----------------------------------------
 // finalize metadata (AOI, start/end time)
 // for a given large fire
-// ---------------------------------------
-// @author: Tianjia Liu (tliu@ucar.edu)
-// =======================================
+// -----------------------------------------
+// @author Tianjia Liu (embrslab@gmail.com)
+// =========================================
 
 var fireDict = {
   // CalFIRE: https://www.fire.ca.gov/incidents/2019/10/23/kincade-fire/

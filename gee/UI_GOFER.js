@@ -1,9 +1,9 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
-    FRAP = ee.FeatureCollection("projects/GlobalFires/FRAP"),
     MTBS_BurnSeverity = ee.ImageCollection("projects/GlobalFires/MTBS/MTBS_BurnSeverity_CONUS"),
     MTBS = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims"),
-    FEDS = ee.FeatureCollection("projects/GlobalFires/GOFER/FEDS_2019_2021");
+    FEDS = ee.FeatureCollection("projects/GlobalFires/GOFER/FEDS_2019_2021"),
+    FRAP = ee.FeatureCollection("projects/GlobalFires/FRAP/FRAP_fire22-1");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 // *****************************************************************
 // =================================================================
@@ -11,8 +11,8 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // =================================================================
 // *****************************************************************
 /*
-// @author Tianjia Liu (tliu@ucar.edu)
-// Last updated: February 22, 2024
+// @author Tianjia Liu (embrslab@gmail.com)
+// Last updated: August 7, 2024
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -325,7 +325,7 @@ var getInfoPanel = function(map,fireDict,fireName,fireInfo) {
   infoPanel.add(ui.Label('Fire Information',
     {fontSize:'18px',fontWeight:'bold',margin: '8px 0 0 0'}));
   
-  infoPanel.add(ui.Label('This app shows the hourly wildfire progression derived from GOES-East and GOES-West geostationary active fire detections. The three versions of GOFER are GOFER-East, GOFER-West, and GOFER-Combined, which are derived from only GOES-East, only GOES-West, or both GOES satellites, respectively. Once a fire is loaded, drag the left-hand bar to reveal another map showing a timeslice of the fire perimeter and active fire lines. Use the slider to change the timestep or click on a point in the active fire line chart to move to a specific timestep. Note that layers may take a few seconds to load.',
+  infoPanel.add(ui.Label('This app shows the hourly wildfire progression derived from GOES-East and GOES-West geostationary active fire detections. The three versions of GOFER are GOFER-East, GOFER-West, and GOFER-Combined, which are derived from only GOES-East, only GOES-West, or both GOES satellites, respectively. Once a fire is loaded, drag the left-hand bar to reveal another map showing a timeslice of the fire perimeter and active fire lines. Use the text box to change the timestep or click on a point in the active fire line chart to move to a specific timestep. Note that layers may take a few seconds to load.',
     {fontSize:'12.5px', margin:'0', padding:'5px 12px 0 0'}));
   
   var fireInfoTable = ui.Panel({
@@ -430,9 +430,9 @@ var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
   {textAlign: 'left',
     fontSize: '16px', color: '#777', margin: '0 18px 6px 15px'});
     
-var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-16-1395-2024');
+var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327264');
 var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
-var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-2023-389');
+var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-16-1395-2024');
 
 var subTitlelinks = ui.Panel([
   subTitle,
@@ -885,7 +885,7 @@ goButton.onClick(function() {
       chartPanel.insert(2,fireLineChart);
       
       fireLineChart.onClick(function(clicked_value) {
-        timeStepSlider.setValue(clicked_value);
+        timeStepBox.setValue(ee.Number(clicked_value).toInt().format().getInfo());
       });
     },
     style: {
@@ -898,7 +898,7 @@ goButton.onClick(function() {
     {fontSize: '12.5px'}));
   
   fireLineChart.onClick(function(clicked_value) {
-    timeStepSlider.setValue(clicked_value);
+    timeStepBox.setValue(ee.Number(clicked_value).toInt().format().getInfo());
   });
   
   var fireSpreadChart = chartFireSpread(GOFER_summaryStats,localStartTime);
@@ -1002,12 +1002,9 @@ goButton.onClick(function() {
   Map2.addLayer(ee.Image().paint(GOFER_cfireLine_slice,'level',3),
     {min: 0, max: 5, palette: cfline_palette, opacity: 0.8},
       'GOFER cfireLine',false);
-
-  var timeStepSlider = ui.Slider({
-    min: minTS.getInfo(),
-    max: ee.Number(maxTS).subtract(1).getInfo(),
-    value: minTS.getInfo(),
-    step: 1,
+  
+  var timeStepBox = ui.Textbox({
+    value: ee.Number(minTS).toInt().format().getInfo(),
     onChange: function(inTS) {
       infoPanelSlice.widgets().get(1).widgets().get(0).widgets().get(0).setValue(true);
       infoPanelSlice.widgets().get(1).widgets().get(1).widgets().get(0).setValue(true);
@@ -1015,7 +1012,7 @@ goButton.onClick(function() {
       infoPanelSlice.widgets().get(1).widgets().get(3).widgets().get(0).setValue(false);
       chartPanel2.clear();
       
-      inTS = ee.Number(inTS);
+      inTS = ee.Number.parse(inTS);
       for (var layer = 0; layer <= 3; layer++) {
         Map2.remove(Map2.layers().get(0));
       }
@@ -1060,24 +1057,38 @@ goButton.onClick(function() {
       chartPanel2.add(GOFER_stats_slice_chart);
       },
     style: {
+      margin: '8px 8px 3px 5px',
       stretch: 'horizontal'
     }
   });
   
-  var timeStepLabel = ui.Label('Hour after Ignition');
+  var timeRangeText = ee.String('(range: ')
+    .cat(ee.Number(minTS).toInt().format())
+    .cat('-').cat(ee.Number(maxTS).subtract(1).toInt().format()).cat(')')
+    .getInfo();
+    
+  var timeStepMainLabel = ui.Label('Hour after Ignition',
+    {margin: '8px 4px 2px 4px'});
+  var timeStepRangeLabel = ui.Label(timeRangeText,
+    {margin: '0px 0px 8px 4px', color:'#777'});
+  
+  var timeStepLabel = ui.Panel({
+    widgets: [timeStepMainLabel,timeStepRangeLabel],
+    layout: ui.Panel.Layout.flow('vertical'),
+  });
   
   var timeStepPanel = ui.Panel({
-    widgets: [timeStepLabel,timeStepSlider],
+    widgets: [timeStepLabel,timeStepBox],
     layout: ui.Panel.Layout.flow('horizontal'),
     style: {
-      width: '70%',
+      width: '230px',
       padding: '0 0 0 5px',
       position: 'top-center',
       margin: '8px 0px 8px 8px',
       stretch: 'horizontal'
     }
   });
-  
+
   Map2.add(timeStepPanel);
 });
 
