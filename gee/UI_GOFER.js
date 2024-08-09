@@ -1065,6 +1065,16 @@ goButton.onClick(function() {
         .setChartType('Table');
       
       chartPanel2.add(GOFER_stats_slice_chart);
+      
+      Map2.remove(centerMapButton);
+      centerMapButton = ui.Button({
+          label: 'Zoom to Fire',
+          style: {position: 'bottom-right'},
+          onClick: function() {
+            Map2.centerObject(GOFER_fireProg_slice);
+          }
+        });
+      Map2.add(centerMapButton);
       },
     style: {
       margin: '8px 8px 3px 5px',
