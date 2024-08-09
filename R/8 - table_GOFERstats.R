@@ -102,5 +102,4 @@ for (satMode in c("gofer_combined","gofer_east","gofer_west")) {
     }
     
     write.csv(fireStats_df,paste0(satMode,"/summary/",fireNameYr,".csv"),row.names=F)
-  }
-}
+  

@@ -12,7 +12,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (embrslab@gmail.com)
-// Last updated: August 7, 2024
+// Last updated: August 8, 2024
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -1003,6 +1003,16 @@ goButton.onClick(function() {
     {min: 0, max: 5, palette: cfline_palette, opacity: 0.8},
       'GOFER cfireLine',false);
   
+  var centerMapButton = ui.Button({
+    label: 'Zoom to Fire',
+    style: {position: 'bottom-right'},
+    onClick: function() {
+      Map2.centerObject(GOFER_fireProg_slice);
+    }
+  });
+  
+  Map2.add(centerMapButton);
+  
   var timeStepBox = ui.Textbox({
     value: ee.Number(minTS).toInt().format().getInfo(),
     onChange: function(inTS) {
@@ -1068,9 +1078,9 @@ goButton.onClick(function() {
     .getInfo();
     
   var timeStepMainLabel = ui.Label('Hour after Ignition',
-    {margin: '8px 4px 2px 4px'});
+    {margin: '8px 4px 2px 4px', fontWeight: 'bold'});
   var timeStepRangeLabel = ui.Label(timeRangeText,
-    {margin: '0px 0px 8px 4px', color:'#777'});
+    {margin: '0px 0px 8px 4px', color:'#777', fontSize: '13px'});
   
   var timeStepLabel = ui.Panel({
     widgets: [timeStepMainLabel,timeStepRangeLabel],
