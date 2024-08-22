@@ -39,7 +39,7 @@ var inFiresList = [
 ];
 
 // Metadata
-var fireInfo = require('users/tl2581/GOFER:largeFires_metadata.js');
+var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
 var projFolder = fireInfo.projFolder;
 
 var dem = ee.Image('USGS/3DEP/10m');

@@ -47,7 +47,7 @@ if (fireDict.MTBS) {
   Map.addLayer(mtbs.filter(ee.Filter.inList('Fire_ID',fireDict.MTBS)),{},'MTBS');
 }
 
-var fireInfo = require('users/tl2581/USCanadaFires:FireDashboard/largeFiresInfo.js');
+var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
 var timeZoneList = fireInfo.timeZoneList;
 
 var UTCtoLT = function(date,tz) {

@@ -19,8 +19,8 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // =================================================================
 
 // Time and location of the fire
-var fireInfo = require('users/tl2581/GOFER:largeFires_metadata.js');
-var colPal = require('users/tl2581/packages:colorPalette.js');
+var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
+var colPal = require('users/embrslab/packages:colorPalette.js');
 
 var yrList = fireInfo.yrList;
 var fireYrList = fireInfo.fireYrList;

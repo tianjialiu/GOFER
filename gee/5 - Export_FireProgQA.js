@@ -48,7 +48,7 @@ var inFiresList = [
 var removeStrayBool = false; 
 
 // Metadata
-var fireInfo = require('users/tl2581/GOFER:largeFires_metadata.js');
+var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
 var projFolder = fireInfo.projFolder;
 var fireParamsList = fireInfo.fireParamsList;
 

@@ -44,7 +44,7 @@ var inFiresList = [
 var satMode = 'C';
 
 // Metadata
-var fireInfo = require('users/tl2581/GOFER:largeFires_metadata.js');
+var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
 var projFolder = fireInfo.projFolder;
 var yrList = fireInfo.yrList;
 var fireYrList = fireInfo.fireYrList;
