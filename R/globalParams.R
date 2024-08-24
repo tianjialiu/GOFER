@@ -1,4 +1,5 @@
 library("raster"); library("tidyverse"); library("sf"); library("lemon"); library("stringr")
+library("tidyverse")
 
 projFolder <- "/Users/TLiu/Google Drive/My Drive/WestUSFires/"
 tempFolder <- file.path(projFolder,"GOES")
