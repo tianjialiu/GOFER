@@ -54,8 +54,8 @@ var ecc = 0.0818191910435;
 
 // GOES parallax correction functions adapted from python code by Steven Pestana
 // https://github.com/spestana/goes-ortho/blob/main/goes_ortho.py
-var lonlat2abi = function(lon_0,aoi) {
-  var lonLat = ee.Image.pixelLonLat().clip(aoi);
+var lonlat2abi = function(lon_0,AOI) {
+  var lonLat = ee.Image.pixelLonLat().clip(AOI);
      
   // convert lat and lon from degrees to radians
   var lon_lat_rad = lonLat.multiply(Math.PI/180);
@@ -190,14 +190,13 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   // Fire Parameters
   var fireParamsYrList = fireParamsList[year];
   var fireDict = fireParamsYrList[fireName];
-  var area_of_interest = fireDict.AOI;
   
-  var demLonLat = ee.Image.pixelLonLat().clip(area_of_interest)
+  var demLonLat = ee.Image.pixelLonLat().clip(fireDict.AOI)
       .reproject({crs: dem.projection(), scale: dem.projection().nominalScale()});
   
   var ground = demLonLat;
-  var goesEast = abi2latlon(lonlat2abi(-75,area_of_interest),-75);
-  var goesWest = abi2latlon(lonlat2abi(-137,area_of_interest),-137);
+  var goesEast = abi2latlon(lonlat2abi(-75,fireDict.AOI),-75);
+  var goesWest = abi2latlon(lonlat2abi(-137,fireDict.AOI),-137);
   
   // Note: the .displace() function does not displace pixels in the x direction at full value,
   // dependent on latitude, must adjust the displacement image
@@ -214,12 +213,12 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var displace_goesWest = x_displace_m_goesWest.addBands(y_displace_m_goesWest);
   
   var fireNameYr = fireName.split(' ').join('_') + '_' + year;
-  
+
   Export.image.toAsset({
     image: displace_goesEast,
     description: fireNameYr + '_GOESEast_Parallax',
     assetId: projFolder + 'GOESEast_Parallax/' + fireNameYr,
-    region: area_of_interest,
+    region: fireDict.AOI,
     crs: 'EPSG:4269',
     crsTransform: [0.00009259259259299957,0,-174.0005555570324,0,0.00009259259259299957,72.00055555584566],
     maxPixels: 1e12
@@ -229,7 +228,7 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
     image: displace_goesWest,
     description: fireNameYr + '_GOESWest_Parallax',
     assetId: projFolder + 'GOESWest_Parallax/' + fireNameYr,
-    region: area_of_interest,
+    region: fireDict.AOI,
     crs: 'EPSG:4269',
     crsTransform: [0.00009259259259299957,0,-174.0005555570324,0,0.00009259259259299957,72.00055555584566],
     maxPixels: 1e12
