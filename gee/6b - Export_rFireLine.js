@@ -46,7 +46,7 @@ var inFiresList = [
 var satMode = 'C';
 
 // Metadata
-var fireInfo = require('users/tl2581/embrslab:largeFires_metadata.js');
+var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
 var projFolder = fireInfo.projFolder;
 var yrList = fireInfo.yrList;
 var fireYrList = fireInfo.fireYrList;
@@ -117,19 +117,19 @@ var getActiveFireLines = function(inFireProg) {
     fline = ee.Geometry(ee.Algorithms.If(
       fline.coordinates().size().gt(0),
       ee.Geometry(ee.Algorithms.If(
-        ee.String(fline.type()).equals('MultiLineString'),
+        fline.type().equals('MultiLineString'),
         ee.FeatureCollection(fline.coordinates().map(get_fline_cut)).union().geometry(),
         get_fline_cut(fline.coordinates()).geometry())),
       fline));
 
     // add perimeters of new fire locations
     var fline_add = ee.FeatureCollection(
-      ee.List(fireProg_next.geometry().coordinates()).map(function(x) {
+      fireProg_next.geometry().coordinates().map(function(x) {
       var newPolyBool = ee.Geometry.Polygon(x)
         .intersects(fireProg_curr.geometry(),10);
       var newPoly = ee.Algorithms.If(newPolyBool,
           ee.Feature(ee.Geometry.Polygon(x)).set('id','Polygon'),
-          ee.Feature(ee.Feature(ee.Geometry.LinearRing(ee.Geometry.Polygon(x).coordinates().flatten()))).set('id','Point'));
+          ee.Feature(ee.Geometry.LinearRing(ee.Geometry.Polygon(x).coordinates().flatten())).set('id','Point'));
         return ee.Feature(newPoly);
       })).filter(ee.Filter.eq('id','Point'));
 

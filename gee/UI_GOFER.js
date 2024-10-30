@@ -12,7 +12,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (embrslab@gmail.com)
-// Last updated: August 8, 2024
+// Last updated: October 30, 2024
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -347,10 +347,11 @@ var getInfoPanel = function(map,fireDict,fireName,fireInfo) {
     widgets: [
       getLayerCheckSimple(map, 'GOFER Fire Progression', true, 3),
       getLayerCheckSimpleSecondary(map, 'Perimeter Outlines', true, 4),
-      getLayerCheckSimple(map, 'FEDS Fire Progression', false, 5),
-      getLayerCheckSimpleSecondary(map, 'Perimeter Outlines', false, 6),
+      getLayerCheckSimpleSecondary(map, 'Ignition Points', false, 5),
+      getLayerCheckSimple(map, 'FEDS Fire Progression', false, 6),
+      getLayerCheckSimpleSecondary(map, 'Perimeter Outlines', false, 7),
       getLegendContinuous(0,'95%',colPal.SpectralFancy),
-      getLegendFootnote('Hourly GOES (GOFER) and 12-hourly VIIRS (FEDSv2)-derived fire progression perimeters, colored by hours after ignition, expressed as the % of hours elapsed at 95% of total area'),
+      getLegendFootnote('Hourly GOES (GOFER) and 12-hourly VIIRS (FEDSv2)-derived fire progression perimeters, colored by hours after ignition, expressed as the % of hours elapsed at 95% of total GOFER area'),
       getLayerCheckSimple(map, 'FRAP Perimeter', false, 0),
       getLegendFootnote('Final perimeter mapped by California\'s Fire and Resource Assessment Program (FRAP)'),
       getLayerCheckSimple(map, 'Land Cover', false, 1),
@@ -381,8 +382,9 @@ var getInfoPanelSlice = function(map) {
     widgets: [
       getLayerCheckSimple(map, 'GOFER Fire Progression', true, 0),
       getLayerCheckSimpleSecondary(map, 'Perimeter Outlines', true, 1),
-      getLayerCheckSimple(map, 'Retrospective Active Fire Line', true, 2),
-      getLayerCheckSimple(map, 'Concurrent Active Fire Line', false, 3),
+      getLayerCheckSimpleSecondary(map, 'Ignition Points', true, 2),
+      getLayerCheckSimple(map, 'Retrospective Active Fire Line', true, 3),
+      getLayerCheckSimple(map, 'Concurrent Active Fire Line', false, 4),
       getLegendDiscrete(cfline_labels,cfline_palette),
       getLegendFootnote('Dormant concurrent active fire lines are not shown on the map. In the chart below, IsActive = 0 is dormant and IsActive = 1 is active.')
     ],
@@ -687,6 +689,8 @@ goButton.onClick(function() {
       goferVersion + '_rfireLine/' + fireNameYr + '_fireLine').sort('timeStep',false);
   var GOFER_summaryStats = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
       goferVersion + '_fireProgStats/' + fireNameYr + '_fireProgStats').sort('timeStep',false);
+  var GOFER_fireIg = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
+      goferVersion + '_fireIg/' + fireNameYr + '_fireIg').sort('timeStep',false);
     
   var dummyDateTime_UTC = ee.Date.parse('YYYY-MM-dd HH:mm:ss','2020-10-01 11:00:00','UTC');
   var dummyDateTime_GMT = ee.Date.parse('YYYY-MM-dd HH:mm:ss',
@@ -743,6 +747,8 @@ goButton.onClick(function() {
   Map1.addLayer(ee.Image().paint(GOFER_fireProg,'timeStep',1),
     {min:1, max: maxTS_area95, palette: ['black'], opacity:0.8},
       'GOFER fire progression, outline');
+  Map1.addLayer(GOFER_fireIg, {color: 'red', opacity:0.8},
+      'GOFER fire ignitions',false);
       
   // FEDS fire progression
   Map1.addLayer(ee.Image().paint(FEDS_fireProg,'timeStep'),
@@ -929,6 +935,8 @@ goButton.onClick(function() {
   var inTS = minTS;
   var GOFER_fireProg_slice = GOFER_fireProg
     .filter(ee.Filter.inList('timeStep',[inTS,ee.Number(inTS).add(1)]));
+  var GOFER_fireIg_slice = GOFER_fireIg
+    .filter(ee.Filter.lte('timeStep',inTS));
   var GOFER_rfireLine_slice = GOFER_rfireLine.filter(ee.Filter.eq('timeStep',inTS));
   var GOFER_cfireLine_slice = GOFER_cfireLine.filter(ee.Filter.eq('timeStep',inTS));
   
@@ -984,7 +992,7 @@ goButton.onClick(function() {
       return x.set('Units','km').set('Variable',ee.String('cfline, c=').cat(x.get('fireConf')))
         .select(['Variable','length_km','Units','fstate'],['Variable','Value','Units','IsActive']);
     }));
-  
+        
   var GOFER_stats_slice_chart = ui.Chart.feature.byFeature(GOFER_stats_slice,'Variable',['Value','Units','IsActive'])
     .setChartType('Table');
   
@@ -996,6 +1004,8 @@ goButton.onClick(function() {
   Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timeStep',1),
     {min: 1, max: maxTS_area95, palette: ['white'], opacity: 0.8},
       'GOFER fire progression slice');
+  Map2.addLayer(GOFER_fireIg_slice, {color: 'red', opacity:0.8},
+    'GOFER fire ignitions');
   Map2.addLayer(ee.Image().paint(GOFER_rfireLine_slice,'timeStep',2),
     {min: 1, max: maxTS_area95, palette: ['red'], opacity: 0.8},
       'GOFER rfireLine');
@@ -1003,6 +1013,7 @@ goButton.onClick(function() {
     {min: 0, max: 5, palette: cfline_palette, opacity: 0.8},
       'GOFER cfireLine',false);
   
+      
   var centerMapButton = ui.Button({
     label: 'Zoom to Fire',
     style: {position: 'bottom-right'},
@@ -1019,7 +1030,8 @@ goButton.onClick(function() {
       infoPanelSlice.widgets().get(1).widgets().get(0).widgets().get(0).setValue(true);
       infoPanelSlice.widgets().get(1).widgets().get(1).widgets().get(0).setValue(true);
       infoPanelSlice.widgets().get(1).widgets().get(2).widgets().get(0).setValue(true);
-      infoPanelSlice.widgets().get(1).widgets().get(3).widgets().get(0).setValue(false);
+      infoPanelSlice.widgets().get(1).widgets().get(3).widgets().get(0).setValue(true);
+      infoPanelSlice.widgets().get(1).widgets().get(4).widgets().get(0).setValue(false);
       chartPanel2.clear();
       
       inTS = ee.Number.parse(inTS);
@@ -1028,6 +1040,8 @@ goButton.onClick(function() {
       }
       var GOFER_fireProg_slice = GOFER_fireProg
         .filter(ee.Filter.inList('timeStep',[inTS,ee.Number(inTS).add(1)]));
+      var GOFER_fireIg_slice = GOFER_fireIg
+        .filter(ee.Filter.lte('timeStep',inTS));
       var GOFER_rfireLine_slice = GOFER_rfireLine.filter(ee.Filter.eq('timeStep',inTS));
       var GOFER_cfireLine_slice = GOFER_cfireLine.filter(ee.Filter.eq('timeStep',inTS));
         
@@ -1046,13 +1060,15 @@ goButton.onClick(function() {
       Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timeStep',1),
         {min: 1, max: maxTS_area95, palette: ['white'], opacity: 0.8},
           'GOFER fire progression slice');
+      Map2.addLayer(GOFER_fireIg_slice, {color: 'red', opacity:0.8},
+        'GOFER fire ignitions');
       Map2.addLayer(ee.Image().paint(GOFER_rfireLine_slice,'timeStep',2),
         {min: 1, max: maxTS_area95, palette: ['red'], opacity: 0.8},
           'GOFER rfireLine');
       Map2.addLayer(ee.Image().paint(GOFER_cfireLine_slice,'level',3),
         {min: 0, max: 5, palette: cfline_palette, opacity: 0.8},
           'GOFER cfireLine',false);
-          
+      
       var GOFER_stats_slice = GOFER_rfireLine_slice.map(function(x) {
         return x.set('Units','km').set('Variable','rfline')
           .select(['Variable','length_km','Units','fstate'],['Variable','Value','Units','IsActive']);
