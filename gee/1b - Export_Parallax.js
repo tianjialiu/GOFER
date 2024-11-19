@@ -190,13 +190,14 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   // Fire Parameters
   var fireParamsYrList = fireParamsList[year];
   var fireDict = fireParamsYrList[fireName];
+  var AOI = fireDict.AOI.bounds();
   
-  var demLonLat = ee.Image.pixelLonLat().clip(fireDict.AOI)
+  var demLonLat = ee.Image.pixelLonLat().clip(AOI)
       .reproject({crs: dem.projection(), scale: dem.projection().nominalScale()});
   
   var ground = demLonLat;
-  var goesEast = abi2latlon(lonlat2abi(-75,fireDict.AOI),-75);
-  var goesWest = abi2latlon(lonlat2abi(-137,fireDict.AOI),-137);
+  var goesEast = abi2latlon(lonlat2abi(-75,AOI),-75);
+  var goesWest = abi2latlon(lonlat2abi(-137,AOI),-137);
   
   // Note: the .displace() function does not displace pixels in the x direction at full value,
   // dependent on latitude, must adjust the displacement image
@@ -218,7 +219,7 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
     image: displace_goesEast,
     description: fireNameYr + '_GOESEast_Parallax',
     assetId: projFolder + 'GOESEast_Parallax/' + fireNameYr,
-    region: fireDict.AOI,
+    region: AOI,
     crs: 'EPSG:4269',
     crsTransform: [0.00009259259259299957,0,-174.0005555570324,0,0.00009259259259299957,72.00055555584566],
     maxPixels: 1e12
@@ -228,7 +229,7 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
     image: displace_goesWest,
     description: fireNameYr + '_GOESWest_Parallax',
     assetId: projFolder + 'GOESWest_Parallax/' + fireNameYr,
-    region: fireDict.AOI,
+    region: AOI,
     crs: 'EPSG:4269',
     crsTransform: [0.00009259259259299957,0,-174.0005555570324,0,0.00009259259259299957,72.00055555584566],
     maxPixels: 1e12

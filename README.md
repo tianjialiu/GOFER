@@ -86,7 +86,7 @@ GOFER/
 
 ### Earth Engine Repository
 ```
-https://code.earthengine.google.com/?accept_repo=users/tl2581/GOFER
+https://code.earthengine.google.com/?accept_repo=users/embrslab/GOFER
 ```
 
 ### Product Description

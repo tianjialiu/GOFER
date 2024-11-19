@@ -41,7 +41,7 @@ var goferVersionList = {
 };
 
 var UTCtoLT = function(date,tz) {
-  return ee.Date(ee.Date(date,'UTC')).format('MMM d, Y HH',tz);
+  return ee.Date(date, 'UTC').format('MMM d, Y HH',tz);
 };
 
 var calcIOU = function(x,y) {
@@ -435,10 +435,18 @@ var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
 var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327264');
 var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
 var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-16-1395-2024');
+var fireTrackingLabel = ui.Label('UCI-NASA Fire Tracking: ', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#000000'});
+var uciLabel = ui.Label('[UCI]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://www.ess.uci.edu/~uci-nasa-firetracking/');
+var nasaLabel = ui.Label('[NASA EIS]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://earth-information-system.github.io/fireatlas/docs/data_overview.html#published-datasets');
+var fireTrackingPanel = ui.Panel(
+  [fireTrackingLabel,uciLabel,nasaLabel],
+  ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'}
+);
 
-var subTitlelinks = ui.Panel([
+var subTitleLinks = ui.Panel([
   subTitle,
-  ui.Panel([dataLabel, codeLabel,paperLabel], ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'})
+  ui.Panel([dataLabel, codeLabel, paperLabel, fireTrackingPanel],
+    ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'})
 ],ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'});
 
 // default app configuration
@@ -500,7 +508,7 @@ var fireSelectPanel = ui.Panel([yearSelectInfo,fireYrSelect,
   ui.Panel.Layout.Flow('horizontal'));
   
 var mainPanel = ui.Panel([
-  ui.Panel([mainTitle,subTitlelinks],
+  ui.Panel([mainTitle,subTitleLinks],
     ui.Panel.Layout.Flow('vertical'),{stretch:'horizontal'}),fireSelectPanel],
   ui.Panel.Layout.Flow('horizontal'),
   {stretch: 'horizontal'});

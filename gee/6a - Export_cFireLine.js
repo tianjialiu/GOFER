@@ -255,7 +255,7 @@ var getActiveFireLines = function(inFireProg,fireDict,confidence_cutoff,fireName
     var fireProgTS = inFireProg.filter(ee.Filter.eq('timeStep',timeStep)).first();
     var geom = ee.Geometry(fireProgTS.geometry());
 
-    var geomLines = ee.FeatureCollection(ee.List(geom.coordinates()).map(function(iPoly) {
+    var geomLines = ee.FeatureCollection(geom.coordinates().map(function(iPoly) {
       var geomPart = ee.Geometry.LineString(ee.List(iPoly).flatten());
       return ee.Feature(geomPart);
     })).union().geometry();
