@@ -2,8 +2,11 @@
 var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
     MTBS_BurnSeverity = ee.ImageCollection("projects/GlobalFires/MTBS/MTBS_BurnSeverity_CONUS"),
     MTBS = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims"),
-    FEDS = ee.FeatureCollection("projects/GlobalFires/GOFER/FEDS_2019_2021"),
-    FRAP = ee.FeatureCollection("projects/GlobalFires/FRAP/FRAP_fire22-1");
+    FRAP = ee.FeatureCollection("projects/GlobalFires/ICS209/FRAP/FRAP_ICS209_crosswalk"),
+    FEDS = ee.FeatureCollection("projects/GlobalFires/ICS209/FEDS/FEDS_ICS209_crosswalk"),
+    FRAP_ICS = ee.FeatureCollection("projects/GlobalFires/ICS209/metadata/FRAP_ICS209_crosswalk"),
+    FEDS_ICS = ee.FeatureCollection("projects/GlobalFires/ICS209/metadata/FEDS_ICS209_crosswalk"),
+    GOFER_ICS = ee.FeatureCollection("projects/GlobalFires/ICS209/metadata/GOFER_ICS209_crosswalk");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 // *****************************************************************
 // =================================================================
@@ -12,7 +15,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (embrslab@gmail.com)
-// Last updated: October 30, 2024
+// Last updated: December 5, 2024
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -351,7 +354,7 @@ var getInfoPanel = function(map,fireDict,fireName,fireInfo) {
       getLayerCheckSimple(map, 'FEDS Fire Progression', false, 6),
       getLayerCheckSimpleSecondary(map, 'Perimeter Outlines', false, 7),
       getLegendContinuous(0,'95%',colPal.SpectralFancy),
-      getLegendFootnote('Hourly GOES (GOFER) and 12-hourly VIIRS (FEDSv2)-derived fire progression perimeters, colored by hours after ignition, expressed as the % of hours elapsed at 95% of total GOFER area'),
+      getLegendFootnote('Hourly GOES (GOFER) and 12-hourly VIIRS (FEDSv2.5)-derived fire progression perimeters, colored by hours after ignition, expressed as the % of hours elapsed at 95% of total GOFER area'),
       getLayerCheckSimple(map, 'FRAP Perimeter', false, 0),
       getLegendFootnote('Final perimeter mapped by California\'s Fire and Resource Assessment Program (FRAP)'),
       getLayerCheckSimple(map, 'Land Cover', false, 1),
@@ -437,7 +440,7 @@ var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px'
 var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-16-1395-2024');
 var fireTrackingLabel = ui.Label('UCI-NASA Fire Tracking: ', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#000000'});
 var uciLabel = ui.Label('[UCI]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://www.ess.uci.edu/~uci-nasa-firetracking/');
-var nasaLabel = ui.Label('[NASA EIS]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://earth-information-system.github.io/fireatlas/docs/data_overview.html#published-datasets');
+var nasaLabel = ui.Label('[NASA]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://earth-information-system.github.io/fireatlas/docs/data_overview.html#published-datasets');
 var fireTrackingPanel = ui.Panel(
   [fireTrackingLabel,uciLabel,nasaLabel],
   ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'}
@@ -528,7 +531,7 @@ ui.root.widgets().reset([mainPanel]);
 var displaySummaryMap = function(year) {
   ui.root.clear(); ui.root.add(mainPanel);
   var Map1 = ui.Map().setOptions('TERRAIN');
-  Map1.setControlVisibility({mapTypeControl: false, layerList: false});
+  Map1.setControlVisibility({layerList: false});
   Map1.style().set({cursor:'crosshair'});
   
   ui.root.add(Map1);
@@ -683,7 +686,7 @@ goButton.onClick(function() {
   
   // Fire Parameters
   var fireDict = fireParamsYrList[fireName];
-  var area_of_interest = fireDict.AOI;
+  var ICS = fireDict.ICS;
   
   var localStartTime_GMT = UTCtoLT(fireDict.start,timeZoneList_GMT[fireDict.state]).getInfo();
   var localStartTime = UTCtoLT(fireDict.start,timeZoneList[fireDict.state]).getInfo();
@@ -700,30 +703,23 @@ goButton.onClick(function() {
   var GOFER_fireIg = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
       goferVersion + '_fireIg/' + fireNameYr + '_fireIg').sort('timeStep',false);
     
-  var dummyDateTime_UTC = ee.Date.parse('YYYY-MM-dd HH:mm:ss','2020-10-01 11:00:00','UTC');
-  var dummyDateTime_GMT = ee.Date.parse('YYYY-MM-dd HH:mm:ss',
-    dummyDateTime_UTC.format('YYYY-MM-dd HH:mm:ss',timeZoneList_GMT[fireDict.state]),'UTC');
-  var tz_adjust = dummyDateTime_UTC.difference(dummyDateTime_GMT,'hour');
-
   var setTS_FEDS = function(x) {
-  return x.set('timeStep',ee.Date(x.get('t'))
-    .advance(tz_adjust,'hour').advance(2,'hour')
-    .difference(fireDict.start,'hour'));
-  };
+    return x.set('timeStep',ee.Date.parse('Y-M-d Hm',x.get('utcTime'))
+      .difference(fireDict.start,'hour'));
+    };
   
   var minTS = GOFER_fireProg.aggregate_min('timeStep');
   var maxTS = GOFER_fireProg.aggregate_max('timeStep');
   
-  var FEDS_fireProg = FEDS.filter(ee.Filter.eq('fname',fireName))
-    .filter(ee.Filter.eq('fyear',year))
-    .sort('timeStep',false)
+  var FEDS_fireProg = FEDS.filter(ee.Filter.inList('ICS',ICS))
+    .map(setTS_FEDS).sort('timeStep',false)
     .filter(ee.Filter.gte('timeStep',0));
-    
+  
   var area95 = ee.Number(GOFER_fireProg.aggregate_max('area_km2')).multiply(0.95);
   var maxTS_area95 = GOFER_fireProg.filter(ee.Filter.gte('area_km2',area95)).sort('timeStep').first()
       .getNumber('timeStep').getInfo();
   
-  var FRAP_perim = FRAP.filter(ee.Filter.inList('OBJECTID',fireDict.FRAP));
+  var FRAP_perim = FRAP.filter(ee.Filter.inList('ICS',ICS));
   
   var burnSeverity = getBurnSeverity(fireDict,year);
  
@@ -732,8 +728,8 @@ goButton.onClick(function() {
   ui.root.setLayout(ui.Panel.Layout.Flow('vertical'));
   ui.Map.Linker([Map1,Map2]);
   
-  Map1.setControlVisibility({mapTypeControl: false, layerList: false});
-  Map1.centerObject(area_of_interest,10);
+  Map1.setControlVisibility({layerList: false});
+  Map1.centerObject(fireDict.AOI,10);
   
   // FRAP perimeter
   Map1.addLayer(ee.Image().paint(FRAP_perim,'OBJECTID'),
@@ -935,9 +931,9 @@ goButton.onClick(function() {
     }
   });
   
-  // Map 2
-  Map2.setControlVisibility({layerList: false, mapTypeControl: false});
-  Map2.centerObject(area_of_interest,10);
+  // Map 2 
+  Map2.setControlVisibility({layerList: false});
+  Map2.centerObject(fireDict.AOI,10);
   var infoPanelSlice = getInfoPanelSlice(Map2);
   
   var inTS = minTS;
@@ -1043,7 +1039,7 @@ goButton.onClick(function() {
       chartPanel2.clear();
       
       inTS = ee.Number.parse(inTS);
-      for (var layer = 0; layer <= 3; layer++) {
+      for (var layer = 0; layer <= 4; layer++) {
         Map2.remove(Map2.layers().get(0));
       }
       var GOFER_fireProg_slice = GOFER_fireProg

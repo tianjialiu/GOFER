@@ -25,30 +25,29 @@ var fireYrList = {
     'River Complex','Tamarack','Windy']
 };
 
-// official acres burned from CalFIRE Redbooks
+// official acres burned from CAL FIRE Redbooks
 // https://www.fire.ca.gov/our-impact/statistics
 
 var fireParamsList = {
   '2019': {
     'Kincade': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2019/10/23/kincade-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2019/10/23/kincade-fire/
       state: 'CA',
       official: 77758,
       ignition: ee.Geometry.Point([-122.780053,38.792458]), 
       AOI: ee.Geometry.Rectangle([-122.96,38.50,-122.59,38.87]),
-      stDate: 'October 23, 2019 9:27 PM', // CalFIRE
+      stDate: 'October 23, 2019 9:27 PM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2019-10-24 04'), 
       end: ee.Date.parse('Y-MM-dd HH','2019-10-30 20'),
       nHour: 160,
       nDay: 7,
       kernels: [3453,2550,1725], // GOES-East, GOES-West, Combined
-      MTBS: ['CA3879612276720191023'], // Fire_ID
-      FEDS: [20993], // FRAPid
-      FRAP: [42478], // OBJECTID
-      DINS: ['CALNU 019376'] // INCIDENTNU
+      MTBS: ['CA3879612276720191023'], // MTBS - Fire_ID
+      ICS: ['CA-LNU-019376'], // ICS-209 - Incident Number
+      DINS: ['CALNU 019376'] // CAL FIRE DINS - INCIDENTNU
     },
     'Walker': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2022/9/1/walker-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2022/9/1/walker-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/6568/
       state: 'CA',
       official: 54612,
@@ -61,13 +60,12 @@ var fireParamsList = {
       nDay: 13,
       kernels: [3397,2615,1694],
       MTBS: ['CA4005312066920190904'],
-      FEDS: [21260],
-      FRAP: [42745]
+      ICS: ['CA-PNF-001324']
     }
   },
   '2020': {
     'August Complex': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/8/16/august-complex-includes-doe-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/8/16/august-complex-includes-doe-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/6983/
       // (North Zone) https://inciweb.nwcg.gov/incident/7071/
       state: 'CA',
@@ -78,7 +76,7 @@ var fireParamsList = {
         [-122.98,40.32],[-123.07,40.50],[-123.64,40.50],[-123.64,40.07],
         [-123.25,39.94]
       ]),
-      stDate: 'Aug 16, 2020 8:37 PM', // CalFIRE
+      stDate: 'Aug 16, 2020 8:37 PM', // CAL FIRE
       // manual start time correction based on active fire timeseries
       start: ee.Date.parse('Y-MM-dd HH','2020-08-16 21'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-10-18 21'),
@@ -86,8 +84,7 @@ var fireParamsList = {
       nDay: 63,
       kernels: [3519,2586,1710],
       MTBS: ['CA3966012280920200817'],
-      FEDS: [296],
-      FRAP: [21743],
+      ICS: ['CA-MNF-000753'],
       DINS: ['CATGU 008864','CATGU 008913','CAMEU 010843','CAMNF 000753']
     },
     'Bobcat': {
@@ -103,45 +100,42 @@ var fireParamsList = {
       nDay: 31,
       kernels: [3071,2485,1651],
       MTBS: ['CA3424811795920200906'],
-      FEDS: [197],
-      FRAP: [21641],
+      ICS: ['CA-ANF-003687'],
       DINS: ['CAANF 003687']
     },
     'Creek': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/9/4/creek-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/9/4/creek-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7147/
       state: 'CA',
       official: 379895,
       ignition: ee.Geometry.Point([-119.261175,37.19147]),
       AOI: ee.Geometry.Polygon([[-119.6,36.96],[-119.6,37.72],[-118.88,37.72],
         [-118.88,37.23],[-119.07,37.23],[-119.07,36.96]]),
-      stDate: 'Sep 4, 2020 6:21 PM', // CalFIRE
+      stDate: 'Sep 4, 2020 6:21 PM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2020-09-05 01'),
       end: ee.Date.parse('Y-MM-dd HH','2020-11-09 20'),
       nHour: 1579,
       nDay: 66,
       kernels: [3227,2549,1681],
       MTBS: ['CA3720111927220200905'],
-      FEDS: [243],
-      FRAP: [21688],
+      ICS: ['CA-SNF-001391'],
       DINS: ['CAFKU 013369']
     },
     'CZU Lightning Complex': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/8/16/czu-lightning-complex-including-warnella-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/8/16/czu-lightning-complex-including-warnella-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7028/
       state: 'CA',
       official: 86509,
       ignition: ee.Geometry.Point([-122.22275,37.17162]), 
       AOI: ee.Geometry.Rectangle([-122.44,37.0,-122.04,37.3]),
-      stDate: 'August 16, 2020 8:00 AM', // CalFIRE
+      stDate: 'August 16, 2020 8:00 AM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2020-08-16 15'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-08-24 18'),
       nHour: 195,
       nDay: 9,
       kernels: [3365,2511,1668],
       MTBS: ['CA3726212222320200816'],
-      FEDS: [21],
-      FRAP: [21462],
+      ICS: ['CA-CZU-005205'],
       DINS: ['CACZU 005205']
     },
     'Dolan': {
@@ -158,16 +152,15 @@ var fireParamsList = {
       nDay: 36,
       kernels: [3289,2496,1658],
       MTBS: ['CA3612312160220200819'],
-      FEDS: [235],
-      FRAP: [21680]
+      ICS: ['CA-LPF-002428']
     },
     'Glass': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/9/27/glass-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/9/27/glass-fire/
       state: 'CA',
       official: 67484,
       ignition: ee.Geometry.Point([-122.49745,38.56295]), 
       AOI: ee.Geometry.Rectangle([-122.75,38.39,-122.37,38.71]),
-      stDate: 'September 27, 2020 8:48 AM', // CalFIRE
+      stDate: 'September 27, 2020 8:48 AM', // CAL FIRE
       // manual start time correction based on active fire timeseries
       start: ee.Date.parse('Y-MM-dd HH','2020-09-27 10'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-10-05 14'),
@@ -175,13 +168,12 @@ var fireParamsList = {
       nDay: 9,
       kernels: [3436,2548,1705],
       MTBS: ['CA3855412253120200927'],
-      FEDS: [222],
-      FRAP: [21667],
+      ICS: ['CA-LNU-015947'],
       DINS: ['CALNU 015947']
     },
     'July Complex': {
       // aka Caldwell, Allen, Dalton (too small for GOES)
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/7/24/july-complex/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/7/24/july-complex/
       // InciWeb: https://inciweb.nwcg.gov/incident/6881/
       state: 'CA',
       official: 83261,
@@ -194,26 +186,24 @@ var fireParamsList = {
       nDay: 10,
       kernels: [3500,2657,1726],
       MTBS: ['CA4169912147720200722','CA4136412109120200722','CA4173712105820200723'],
-      FEDS: [309,230,231],
-      FRAP: [21756,21675,21676]
+      ICS: ['CA-MDF-000487']
     },
     'LNU Lightning Complex': {
       // aka Hennessey, Walbridge, Meyers (too small for GOES)
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/8/17/lnu-lightning-complex-includes-hennessey-gamble-15-10-spanish-markley-13-4-11-16-walbridge/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/8/17/lnu-lightning-complex-includes-hennessey-gamble-15-10-spanish-markley-13-4-11-16-walbridge/
       // InciWeb: https://inciweb.nwcg.gov/incident/7027/
       state: 'CA',
       official: 363220,
       ignition: ee.Geometry.Point([-122.14864,38.48193]),
       AOI: ee.Geometry.Rectangle([-123.27,38.26,-121.92,38.98]), // AOI: ee.Geometry.Rectangle([-122.73,38.26,-121.92,38.98]),
-      stDate: 'Aug 17, 2020 6:40 AM', // CalFIRE
+      stDate: 'Aug 17, 2020 6:40 AM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2020-08-17 13'),
       end: ee.Date.parse('Y-MM-dd HH','2020-08-30 00'),
       nHour: 299,
       nDay: 13,
       kernels: [3441,2551,1686],
       MTBS: ['CA3850412233720200817','CA3867312307820200817','CA3851412322420200817'],
-      FEDS: [219,220,221],
-      FRAP: [21664,21665,21666],
+      ICS: ['CA-LNU-013407'],
       DINS: ['CALNU 013407']
     },
     'North Complex': {
@@ -230,8 +220,7 @@ var fireParamsList = {
       nDay: 48,
       kernels: [3414,2598,1700],
       MTBS: ['CA4009112093120200817'],
-      FEDS: [238],
-      FRAP: [21683],
+      ICS: ['CA-PNF-001308'],
       DINS: ['CABTU 010751']
     },
     'Red Salmon Complex': {
@@ -247,11 +236,10 @@ var fireParamsList = {
       nDay: 75,
       kernels: [3596,2620,1729],
       MTBS: ['CA4118512343320200728'],
-      FEDS: [301],
-      FRAP: [21748]
+      ICS: ['CA-SRF-000656']
     },
     'SCU Lightning Complex': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/8/16/scu-lightning-complex
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/8/16/scu-lightning-complex
       // InciWeb: https://inciweb.nwcg.gov/incident/7056/
       state: 'CA',
       official: 396625,
@@ -265,8 +253,7 @@ var fireParamsList = {
       nDay: 24,
       kernels: [3333,2525,1668],
       MTBS: ['CA3742412156820200816'],
-      FEDS: [174],
-      FRAP: [21616],
+      ICS: ['CA-SCU-005740'],
       DINS: ['CASCU 005740']
     },
     'Slater and Devil': {
@@ -284,8 +271,7 @@ var fireParamsList = {
       nDay: 16,
       kernels: [3637,2648,1734],
       MTBS: ['CA4185812335420200908','CA4190412319120200909'],
-      FEDS: [249,261], // FEDS cuts off at CA/OR border,
-      FRAP: [21707,21695],
+      ICS: ['CA-KNF-007035'],
       DINS: ['CAKNF 007035']
     },
     'SQF Complex': {
@@ -305,12 +291,11 @@ var fireParamsList = {
       nDay: 51,
       kernels: [3158,2526,1666],
       MTBS: ['CA3616111845220200819'],
-      FEDS: [239],
-      FRAP: [21684],
+      ICS: ['CA-SQF-002622'],
       DINS: ['CASQF 002541']
     },
     'W-5 Cold Springs': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/8/23/w-5-cold-springs/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/8/23/w-5-cold-springs/
       // InciWeb: https://inciweb.nwcg.gov/incident/7010/
       state: 'CA',
       official: 84817,
@@ -323,16 +308,15 @@ var fireParamsList = {
       nDay: 13,
       kernels: [3416,2662,1722],
       MTBS: ['CA4102912028120200818'],
-      FEDS: [343], // FEDS cuts off at CA/NV border
-      FRAP: [21791]
+      ICS: ['CA-NOD-004727']
     },
     'Zogg': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2020/9/27/zogg-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2020/9/27/zogg-fire/
       state: 'CA',
       official: 56338,
       ignition: ee.Geometry.Point([-122.56656,40.53927]), 
       AOI: ee.Geometry.Rectangle([-122.83,40.26,-122.47,40.60]),
-      stDate: 'September 27, 2020 4:03 PM', // CalFIRE
+      stDate: 'September 27, 2020 4:03 PM', // CAL FIRE
       // manual start time correction based on active fire timeseries
       start: ee.Date.parse('Y-MM-dd HH','2020-09-27 21'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-10-02 04'),
@@ -340,14 +324,13 @@ var fireParamsList = {
       nDay: 5,
       kernels: [3519,2605,1755],
       MTBS: ['CA4054112256820200927'],
-      FEDS: [119],
-      FRAP: [21560],
+      ICS: ['CA-SHU-009978'],
       DINS: ['CASHU 009978']
     }
   },
   '2021': {
     'Antelope' : {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/8/1/antelope-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/8/1/antelope-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7764/
       state: 'CA',
       official: 145632,
@@ -364,13 +347,12 @@ var fireParamsList = {
       nDay: 48,
       kernels: [3526,2654,1736],
       MTBS: ['CA4150012192920210801'],
-      FEDS: [21598],
-      FRAP: [43096],
+      ICS: ['CA-KNF-006454'],
       DINS: ['CAKNF 006454']
     },
     'Beckwourth Complex': {
       // aka Sugar
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/4/beckwourth-complex/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/7/4/beckwourth-complex/
       // InciWeb: https://inciweb.nwcg.gov/incident/7601/
       state: 'CA',
       official: 105670,
@@ -385,12 +367,11 @@ var fireParamsList = {
       nDay: 36,
       kernels: [3371,2615,1694],
       MTBS: ['CA3983912034520210702'],
-      FEDS: [21585],
-      FRAP: [43079,43197],
+      ICS: ['CA-PNF-001064'],
       DINS: ['CAPNF 001064']
     },
     'Caldor': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/8/14/caldor-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/8/14/caldor-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7801/
       state: 'CA',
       official: 221835,
@@ -399,19 +380,18 @@ var fireParamsList = {
         [-120.64,38.51],[-120.76,38.64],[-120.76,38.98],[-119.85,38.98],
         [-119.85,38.82],[-120.06,38.51]
       ]),
-      stDate: 'Aug 14, 2021 6:54 PM', // CalFIRE
+      stDate: 'Aug 14, 2021 6:54 PM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2021-08-15 01'),
       end: ee.Date.parse('Y-MM-dd HH','2021-09-13 02'),
       nHour: 697,
       nDay: 30,
       kernels: [3328,2577,1696],
       MTBS: ['CA3858612053820210815'],
-      FEDS: [21604],
-      FRAP: [43102],
+      ICS: ['CA-ENF-024030'],
       DINS: ['CAENF 024030']
     },
     'Dixie': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/13/dixie-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/7/13/dixie-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7690/
       state: 'CA',
       official: 963309,
@@ -425,36 +405,34 @@ var fireParamsList = {
         [-121.23,40.85],[-120.23,39.8],
       ]),
       AOIsmallTS: 70,
-      stDate: 'Jul 13, 2021 5:15 PM', // CalFIRE
+      stDate: 'Jul 13, 2021 5:15 PM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2021-07-14 00'),
       end: ee.Date.parse('Y-MM-dd HH','2021-09-10 06'),
       nHour: 1398,
       nDay: 59,
       kernels: [3429,2615,1706],
       MTBS: ['CA3987612137920210714'],
-      FEDS: [21684],
-      FRAP: [43182],
+      ICS: ['CA-BTU-009205'],
       DINS: ['CABTU 009205']
     },
     'KNP Complex': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/9/10/knp-complex/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/9/10/knp-complex/
       // InciWeb: https://inciweb.nwcg.gov/incident/7838/
       state: 'CA',
       official: 88307,
       ignition: ee.Geometry.Point([-118.811,36.567]),
       AOI: ee.Geometry.Rectangle([-119.09,36.40,-118.61,36.79]),
-      stDate: 'September 10, 2021 7:00 AM', // CalFIRE
+      stDate: 'September 10, 2021 7:00 AM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2021-09-10 14'), 
       end: ee.Date.parse('Y-MM-dd HH','2021-10-08 14'),
       nHour: 672,
       nDay: 28,
       kernels: [3193,2532,1667],
       MTBS: ['CA3658211879520210912'],
-      FEDS: [21434],
-      FRAP: [42928]
+      ICS: ['CA-KNP-000122']
     },
     'McCash': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/8/18/mccash-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/8/18/mccash-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7757/
       state: 'CA',
       official: 94962,
@@ -467,11 +445,10 @@ var fireParamsList = {
       nDay: 57,
       kernels: [3634,2636,1743],
       MTBS: ['CA4156412340420210801'],
-      FEDS: [21616],
-      FRAP: [43114]
+      ICS: ['CA-SRF-000651']
     },
     'McFarland': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/30/mcfarland-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/7/30/mcfarland-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7746/
       state: 'CA',
       official: 122653,
@@ -484,12 +461,11 @@ var fireParamsList = {
       nDay: 28,
       kernels: [3533,2597,1724],
       MTBS: ['CA4035012303620210730'],
-      FEDS: [21595],
-      FRAP: [43091],
+      ICS: ['CA-SHF-001175'],
       DINS: ['CASHF 001175']
     },
     'Monument': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/30/monument-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/7/30/monument-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7750/
       state: 'CA',
       official: 223124,
@@ -502,13 +478,12 @@ var fireParamsList = {
       nDay: 50,
       kernels: [3569,2609,1744],
       MTBS: ['CA4075212333720210731'],
-      FEDS: [21615],
-      FRAP: [43113],
+      ICS: ['CA-SHF-001187'],
       DINS: ['CASHF 001187']
     },
     'River Complex': {
       // aka Haypress and Cronan
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/30/river-complex/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/7/30/river-complex/
       // InciWeb: https://inciweb.nwcg.gov/incident/7760/
       state: 'CA',
       official: 199359,
@@ -521,29 +496,27 @@ var fireParamsList = {
       nDay: 59,
       kernels: [3573,2625,1719],
       MTBS: ['CA4132412320120210731','CA4114212301620210731'],
-      FEDS: [21685],
-      FRAP: [43183]
+      ICS: ['CA-KNF-006385']
     },
     'Tamarack': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/7/4/tamarack-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/7/4/tamarack-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7674/
       state: 'CA',
       official: 68637,
       ignition: ee.Geometry.Point([-119.8591887,38.6280042]),
       AOI: ee.Geometry.Rectangle([-119.99,38.57,-119.46,38.86]),
-      stDate: 'July 4, 2021 11:57 AM', // CalFIRE
+      stDate: 'July 4, 2021 11:57 AM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2021-07-04 18'), 
       end: ee.Date.parse('Y-MM-dd HH','2021-08-05 23'),
       nHour: 773,
       nDay: 33,
       kernels: [3298,2582,1718],
       MTBS: ['CA3862811985720210704'],
-      FEDS: [21670], // FEDS cuts off at CA/NV border
-      FRAP: [43168],
+      ICS: ['NV-HTF-030419'],
       DINS: ['NVHTF 030419']
     },
     'Windy': {
-      // CalFIRE: https://www.fire.ca.gov/incidents/2021/9/9/windy-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2021/9/9/windy-fire/
       // InciWeb: https://inciweb.nwcg.gov/incident/7841/
       state: 'CA',
       official: 97528,
@@ -556,8 +529,7 @@ var fireParamsList = {
       nDay: 27,
       kernels: [3151,2528,1702],
       MTBS: ['CA3604711863120210910'],
-      FEDS: [21655],
-      FRAP: [43153],
+      ICS: ['CA-TIA-003058'],
       DINS: ['CATUU 000786']
     }
   }

@@ -3,7 +3,7 @@ GOFER: GOES-Observed Fire Event Representation
 
 The GOFER algorithm uses geostationary satellite observations of active fires from GOES-East and GOES-West to map the hourly progression of large wildfires (over 50,000 acres or 202 sq. km). GOES observes North and South America with a spatial resolution of 2 km at the equator and at a frequency of 10-15 minutes for the full disk view. Along with the fire perimeter, we derive the active fire lines and fire spread rates. We tested the GOFER algorithm on a set of 28 wildfires in California from 2019-2021 and produced three versions of the product: GOFER-Combined, GOFER-East, and GOFER-West. GOFER-Combined uses both GOES-East and GOES-West observations, while GOFER-East and GOFER-West use only GOES-East and only GOES-West observations, respectively. We find that GOFER performs reasonably well compared to final perimeters from California's Fire and Resource Assessment Program (FRAP) and 12-hourly perimeters from the Fire Event Data Suite (FEDS), derived from 375-m active fire observations. See our [ESSD paper](https://doi.org/10.5194/essd-16-1395-2024) for more details. The [GOFER Product Visualization](https://globalfires.earthengine.app/view/gofer) app on Earth Engine Apps provides an overview of the product, alongside other products and datasets, such as FEDS and FRAP perimeters and 30-m burn severity from Monitoring Trends in Burn Severity (MTBS). The product of 28 large wildfires in California from 2019-2021 is available on [Zenodo](https://doi.org/10.5281/zenodo.8327264).
 
-For more information on all of our fire tracking algorithms and datasets, please visit the following webpages: [UCI/ESS](https://www.ess.uci.edu/~uci-nasa-firetracking/), [NASA-EIS](https://earth-information-system.github.io/fireatlas/docs/data_overview.html#published-datasets).
+For more information on all of our fire tracking algorithms and datasets, please visit the following webpages: [UCI/ESS](https://www.ess.uci.edu/~uci-nasa-firetracking/), [NASA](https://earth-information-system.github.io/fireatlas/docs/data_overview.html#published-datasets).
 
 ![banner image](https://github.com/tianjialiu/GOFER/blob/main/docs/imgs/GOFER.png)
 
@@ -116,6 +116,12 @@ https://code.earthengine.google.com/?accept_repo=users/embrslab/GOFER
 
 * For cflinelen, e.g. cflinelen5 = the portion of the perimeter that intersects with concurrent active fires with fire detection confidence > 0.05; cflinelen5 should be used as the default fire line as it incorporates most active fire pixels along the perimeter and most closely matches FEDS
 * For fstate, both rfline and cfline have fstate columns, e.g. rfline_fstate; if the fire line is dormant at the timestep (fstate = 0), then that timestep is filled with the most recent cfline or the most immediate rfline after the timestep; to get the original flinelen, multiply by the corresponding fstate
+
+### Versions
+* <b>0.0</b> - initial version for ESSD Discussions
+* <b>0.1</b> (current) - published version in ESSD [(Liu et al., 2024)](https://doi.org/10.5194/essd-16-1395-2024)
+* <b>0.2</b> (in progress) - several minor updates: revise fire confidence for saturated fire pixels from 0.9 to 1.0, fix rfline in instances for multipolygons where a dormant segment of rfline persists too far in advance, use ICS-209 IDs to crosswalk GOFER, FEDS, FRAP, and MTBS
+* CA fires to be added: 2022 (Mosquito, McKinney), 2023 (Smith River Complex, York, SRF Lightning Complex), 2024 (Park, Borel, Bridge)
 
 ## Publications
 Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo (2024). Systematically tracking the hourly progression of large wildfires using GOES satellite observations. Earth Sys. Sci. Data, 16, 1395-1424. https://doi.org/10.5194/essd-16-1395-2024
