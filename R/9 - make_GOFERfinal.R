@@ -150,9 +150,15 @@ for (satMode in c("gofer_combined","gofer_east","gofer_west")) {
             row.names=F)
   
   scaleVal <- read.csv(paste0(satMode,"/fireStats/scaleVal_",str_replace(satMode_shortName,"GOFER",""),".csv"))
-  write.csv(fireSummary_list,paste0("../GOFER/",satMode_final,"/",satMode_shortName,"_scaleVal.csv"),
+  write.csv(scaleVal,paste0("../GOFER/",satMode_final,"/",satMode_shortName,"_scaleVal.csv"),
             row.names=F)
   
   print(satMode)
 }
 
+fireData_clean <- fireData %>%
+  dplyr::mutate(fname=FireName,fyear=Year,acres_official=Acres,
+         GOESIg_UTC=GOES_UTC) %>%
+  dplyr::select(fname,fyear,acres_official,GOESIg_UTC,local_tz,local_tzGMT)
+
+write.csv(fireData_clean,paste0("../GOFER/fireData.csv"),row.names=F)

@@ -14,6 +14,7 @@ For more information on all of our fire tracking algorithms and datasets, please
 | `fireData.csv` | dictionary of key metadata for all fires in R |
 | 0a - `Calc_staging.js` | set temporal and spatial constraints for each fire by manually inspecting GOES active fire pixels and timeseries |
 | 0b - `Calc_kernelRes.js`  | calculate the kernel radius for smoothing based on the GOES spatial resolution |
+| 0c - `Export_fireData.js`  | export fire metadata and save as `fireData.csv` |
 | 1a - `Export_FireConf.js` | export GOES fire detection confidence |
 | 1b - `Export_Parallax.js` | export GOES parallax displacement in x and y-directions |
 | 2 - `Export_ParamSens.js`, `eePro_ParamSens.R` | export optimization metric for confidence threshold and parallax adjustment factor |
@@ -118,10 +119,15 @@ https://code.earthengine.google.com/?accept_repo=users/embrslab/GOFER
 * For fstate, both rfline and cfline have fstate columns, e.g. rfline_fstate; if the fire line is dormant at the timestep (fstate = 0), then that timestep is filled with the most recent cfline or the most immediate rfline after the timestep; to get the original flinelen, multiply by the corresponding fstate
 
 ### Versions
-* <b>0.0</b> - initial version for ESSD Discussions
-* <b>0.1</b> (current) - published version in ESSD [(Liu et al., 2024)](https://doi.org/10.5194/essd-16-1395-2024)
-* <b>0.2</b> (in progress) - several minor updates: revise fire confidence for saturated fire pixels from 0.9 to 1.0, fix rfline in instances for multipolygons where a dormant segment of rfline persists too far in advance, use ICS-209 IDs to crosswalk GOFER, FEDS, FRAP, and MTBS
+* [<b>0.0</b>](https://doi.org/10.5281/zenodo.8327265) - initial version for ESSD Discussions [(Liu et al., 2023)](https://doi.org/10.5194/essd-2023-389)
+* [<b>0.1</b>](https://doi.org/10.5281/zenodo.10442843) - published version in ESSD [(Liu et al., 2024)](https://doi.org/10.5194/essd-16-1395-2024)
+* [<b>0.11</b>](https://doi.org/10.5281/zenodo.14504174) (current) - fix mismatched ignition time (GOES_UTC) in EE and fireData.csv for the 2019 Walker Fire, fix scaleVal CSVs that previously duplicated the summary CSVs due to an error in the R code
+* <b>0.2</b> (in progress) - several minor updates: revise fire confidence for saturated fire pixels from 0.9 to 1.0, fix rfline in instances for multipolygons where a dormant segment of rfline persists too far in advance, use ICS-209 IDs to crosswalk GOFER, FEDS, FRAP, and MTBS, add EE script (`Export_fireData.js`) to download fireData information directly from EE to avoid future mismatches in metadata
 * CA fires to be added: 2022 (Mosquito, McKinney), 2023 (Smith River Complex, York, SRF Lightning Complex), 2024 (Park, Borel, Bridge)
+
+## Datasets
+Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo (2024). GOES-Observed Fire Event Representation (GOFER) product for 28 California wildfires from 2019-2021. https://doi.org/10.5281/zenodo.8327264
 
 ## Publications
 Liu, T., J.T. Randerson, Y. Chen, D.C. Morton, E.B. Wiggins, P. Smyth, E. Foufoula-Georgiou, R. Nadler, and O. Nevo (2024). Systematically tracking the hourly progression of large wildfires using GOES satellite observations. Earth Sys. Sci. Data, 16, 1395-1424. https://doi.org/10.5194/essd-16-1395-2024
+
