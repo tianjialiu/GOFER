@@ -135,7 +135,7 @@ for (satMode in c("gofer_combined","gofer_east","gofer_west")) {
            quiet=T,append=F)
   
   rfireLine_list <- do.call(rbind,rfireLine_list)
-  st_write(fireProgShp_list,paste0("../GOFER/",satMode_final,"/",satMode_shortName,"_rfireLine.shp"),
+  st_write(rfireLine_list,paste0("../GOFER/",satMode_final,"/",satMode_shortName,"_rfireLine.shp"),
            quiet=T,append=F)
   
   fireIg_list <- do.call(rbind,fireIg_list)
@@ -149,7 +149,8 @@ for (satMode in c("gofer_combined","gofer_east","gofer_west")) {
   write.csv(fireSummary_list,paste0("../GOFER/",satMode_final,"/",satMode_shortName,"_summary.csv"),
             row.names=F)
   
-  scaleVal <- read.csv(paste0(satMode,"/fireStats/scaleVal_",str_replace(satMode_shortName,"GOFER",""),".csv"))
+  scaleVal <- read.csv(paste0(satMode,"/fireStats/scaleVal_",str_replace(satMode_shortName,"GOFER",""),".csv")) %>%
+    dplyr::rename(fname="fireName",fyear="year",timestep="timeStep")
   write.csv(scaleVal,paste0("../GOFER/",satMode_final,"/",satMode_shortName,"_scaleVal.csv"),
             row.names=F)
   

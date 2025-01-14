@@ -115,14 +115,15 @@ https://code.earthengine.google.com/?accept_repo=users/embrslab/GOFER
 | Fire spread rate (MAE) | maefspread | km/h |
 | Fire spread rate (AWE) | awefspread | km/h |
 
-* For cflinelen, e.g. cflinelen5 = the portion of the perimeter that intersects with concurrent active fires with fire detection confidence > 0.05; cflinelen5 should be used as the default fire line as it incorporates most active fire pixels along the perimeter and most closely matches FEDS
+* For cflinelen, e.g. cflinelen5 = the portion of the perimeter that intersects with concurrent active fires with fire detection confidence > 0.05; cflinelen5 should be used as the default fire line as it incorporates most active fire pixels along the perimeter and most closely matches FEDS; for cfline, fconf similarly denotes the fire detection confidence of its definition
 * For fstate, both rfline and cfline have fstate columns, e.g. rfline_fstate; if the fire line is dormant at the timestep (fstate = 0), then that timestep is filled with the most recent cfline or the most immediate rfline after the timestep; to get the original flinelen, multiply by the corresponding fstate
 
 ### Versions
 * [<b>0.0</b>](https://doi.org/10.5281/zenodo.8327265) - initial version for ESSD Discussions [(Liu et al., 2023)](https://doi.org/10.5194/essd-2023-389)
 * [<b>0.1</b>](https://doi.org/10.5281/zenodo.10442843) - published version in ESSD [(Liu et al., 2024)](https://doi.org/10.5194/essd-16-1395-2024)
-* [<b>0.11</b>](https://doi.org/10.5281/zenodo.14504174) (current) - fix mismatched ignition time (GOES_UTC) in EE and fireData.csv for the 2019 Walker Fire, fix scaleVal CSVs that previously duplicated the summary CSVs due to an error in the R code
-* <b>0.2</b> (in progress) - several minor updates: revise fire confidence for saturated fire pixels from 0.9 to 1.0, fix rfline in instances for multipolygons where a dormant segment of rfline persists too far in advance, use ICS-209 IDs to crosswalk GOFER, FEDS, FRAP, and MTBS, add EE script (`Export_fireData.js`) to download fireData information directly from EE to avoid future mismatches in metadata
+* [<b>0.11</b>](https://doi.org/10.5281/zenodo.14504174) - bug fixes: fix mismatched ignition time (GOES_UTC) in EE and fireData.csv for the 2019 Walker Fire, fix scaleVal CSVs that previously duplicated the summary CSVs due to an error in the R code
+* [<b>0.12</b>](https://doi.org/10.5281/zenodo.14638647) (current) - bug fixes: fix rfireline.shp that previously duplicated the fireProg.shp due to an error in the R code
+* <b>0.2</b> (in progress) - several minor updates including data pipeline streamlining: revise fire confidence for saturated fire pixels from 0.9 to 1.0, fix rfline in instances for multipolygons where a dormant segment of rfline persists too far in advance, use ICS-209 IDs to crosswalk GOFER, FEDS, FRAP, and MTBS, add EE script (`Export_fireData.js`) to download fireData information directly from EE to avoid future mismatches in metadata, fix instances of artifacts in GOFER-East and GOFER-West caused clipped parallax terrain correction inputs, revise colnames in `scaleVal.csv` to be consistent with other files; EE Apps now calls the Zenodo version of GOFER
 * CA fires to be added: 2022 (Mosquito, McKinney), 2023 (Smith River Complex, York, SRF Lightning Complex), 2024 (Park, Borel, Bridge)
 
 ## Datasets
