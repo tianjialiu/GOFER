@@ -37,12 +37,6 @@ var inFiresList = [
   ['Windy','2021']
 ];
 
-// Inputs
-var fireIdx = 4;
-var fireName = inFiresList[fireIdx][0];
-var year = inFiresList[fireIdx][1];
-var fireNameYr = fireName.split(' ').join('_') + '_' + year;
-
 // Input modes:
 // 1. 'C' (Combined, both GOES-East/West)
 // 2. 'E' (East, only GOES-East),
@@ -57,17 +51,6 @@ var fireYrList = fireInfo.fireYrList;
 var fireParamsList = fireInfo.fireParamsList;
 var parallaxAdjList = fireInfo.parallaxAdjList;
 var confidenceThreshList = fireInfo.confidenceThreshList;
-
-// Fire Parameters
-var fireParamsYrList = fireParamsList[year];
-var fireDict = fireParamsYrList[fireName];
-fireDict.timeInterval = 1;
-fireDict.tileScale = 1;
-
-var confidence_cutoff = confidenceThreshList[satMode]; 
-var parallaxAdj_val = parallaxAdjList[satMode]; 
-
-var fireNameYr = fireName.split(' ').join('_') + '_' + year;
 
 var findBandNames = function(eHour) {
   return ee.List.sequence(1,eHour,1).map(function(iHour) {
@@ -146,7 +129,8 @@ var getFireConf = function(fireDict,eHour) {
 
   var input_confidence = max_confidence[satMode];
   
-  var smoothed_confidence = input_confidence.clip(fireDict.AOI)
+  var smoothed_confidence = input_confidence
+    .clip(fireDict.AOIbuf)
     .reduceNeighborhood({
       'reducer': ee.Reducer.mean(),
       'kernel': input_kernel,
@@ -158,7 +142,7 @@ var getFireConf = function(fireDict,eHour) {
 
 var getFirePerim = function(fireDict,smoothed_confidence,confidence_cutoff) {
   var high_confidence = smoothed_confidence.gt(confidence_cutoff);
-
+  
   var affected_areas = high_confidence
     .reproject({crs: 'EPSG:4326', scale: 50})
     .reduceToVectors({
@@ -182,7 +166,7 @@ var getFireProgression = function(fireDict,sHour,eHour,confidence_cutoff) {
     
       return ee.Feature(affected_areas.geometry(), {
           timeStep: iStep,
-          area_km2: affected_areas.geometry().area(100).multiply(1/1e6),
+          area_km2: affected_areas.geometry().area(100).multiply(1/1e6)
         });
     });
   
@@ -206,30 +190,49 @@ var getFireProgShp = function(fireAreaByHour) {
   return fireProg;
 };
 
-// Outputs fire perimeters in 24h chunks, defined by chunkInterval;
-// this prevents computational timeouts for large fires
-var chunkInterval = 24;
-var nChunk = fireDict.nDay * 24/chunkInterval - 1;
+for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
+  
+  // Fire Parameters
+  var fireName = inFiresList[fireIdx][0];
+  var year = inFiresList[fireIdx][1];
+  var fireNameYr = fireName.split(' ').join('_') + '_' + year;
+  
+  var fireParamsYrList = fireParamsList[year];
+  var fireDict = fireParamsYrList[fireName];
+  fireDict.timeInterval = 1;
+  fireDict.tileScale = 1;
+  fireDict.AOIbuf = fireDict.AOI.bounds().buffer(5000).bounds();
+  
+  var confidence_cutoff = confidenceThreshList[satMode]; 
+  var parallaxAdj_val = parallaxAdjList[satMode]; 
+  
+  var fireNameYr = fireName.split(' ').join('_') + '_' + year;
+  
+  // Outputs fire perimeters in 24h chunks, defined by chunkInterval;
+  // this prevents computational timeouts for large fires
+  var chunkInterval = 24;
+  var nChunk = fireDict.nDay * 24/chunkInterval - 1;
+  
+  // If any chunk is missing, uncomment the two lines below and resubmit those select tasks.
+  // First, set sHourMissing as an array of the start hour(s) of the missing chunks.
+  // Then, set var sHour = sHourMissing[iChunk] in the for loop.
+  
+  // var sHourMissing = [1081,1153,1177,1225,1249];
+  // var nChunk = sHourMissing.length - 1;
+  
+  for (var iChunk = 0; iChunk <= nChunk; iChunk ++) {
+    var sHour = iChunk * chunkInterval + 1;
+    var eHour = sHour + chunkInterval - 1;
+    if (iChunk === nChunk) {eHour = fireDict.nHour}
+  
+    var fireAreaByHour = getFireProgression(fireDict,sHour,eHour,confidence_cutoff);
+    var fireProg = getFireProgShp(fireAreaByHour);
 
-// If any chunk is missing, uncomment the two lines below and resubmit those select tasks.
-// First, set sHourMissing as an array of the start hour(s) of the missing chunks.
-// Then, set var sHour = sHourMissing[iChunk] in the for loop.
-
-// var sHourMissing = [1081,1153,1177,1225,1249];
-// var nChunk = sHourMissing.length - 1;
-
-for (var iChunk = 0; iChunk <= nChunk; iChunk ++) {
-  var sHour = iChunk * chunkInterval + 1;
-  var eHour = sHour + chunkInterval - 1;
-  if (iChunk === nChunk) {eHour = fireDict.nHour}
-
-  var fireAreaByHour = getFireProgression(fireDict,sHour,eHour,confidence_cutoff);
-  var fireProg = getFireProgShp(fireAreaByHour);
-
-  Export.table.toDrive({
-    collection: fireProg,
-    description: fireNameYr + '_fireProg_s' + sHour + 'e' + eHour,
-    fileFormat: 'SHP',
-    folder: 'ee_fireProg_chunks'
-  });
+    Export.table.toDrive({
+      collection: fireProg,
+      description: fireNameYr + '_fireProg_s' + sHour + 'e' + eHour,
+      fileFormat: 'SHP',
+      folder: 'ee_fireProg_chunks'
+    });
+  }
 }

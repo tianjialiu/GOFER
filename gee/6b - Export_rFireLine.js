@@ -44,6 +44,7 @@ var inFiresList = [
 // 2. 'E' (East, only GOES-East)
 // 3. 'W' (West, only GOES-West)
 var satMode = 'C';
+var searchSens = 20; // search the next 20 distinct polygons with area increases, increase this number if job fails
 
 // Metadata
 var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
@@ -57,14 +58,46 @@ var roundNum = function(inputNum,digits) {
     .divide(Math.pow(10,digits));
 };
 
+var getNextTS = function(fireProg,timeStep) {
+  var fireProg_curr = ee.Feature(fireProg.filter(ee.Filter.eq('timeStep',timeStep)).first());
+  var fireProgArea_curr = roundNum(fireProg_curr.geometry().area().divide(1e6),3);
+  
+  var fireProg_nextAll = ee.FeatureCollection(fireProg
+    .filter(ee.Filter.gt('area_acre',fireProg_curr.getNumber('area_acre')))
+    .distinct('area_acre')
+    .toList(searchSens,0))
+    .map(function(fireProg_next) {
+      var fireProg_nextPart = ee.FeatureCollection(fireProg_next.geometry().coordinates().map(function(x) {
+        return ee.Feature(ee.Geometry.Polygon(x));
+      })).filterBounds(fireProg_curr.geometry());
+      
+      var fireProgArea_next = roundNum(fireProg_nextPart.geometry().area().divide(1e6),3);
+      
+      return ee.Feature(fireProg_next)
+        .set('areaDiff',fireProgArea_next.subtract(fireProgArea_curr));
+    });
+  
+  var areaOfNextTS = fireProg_nextAll.filter(ee.Filter.gt('areaDiff',0))
+    .first().getNumber('area_acre');
+    
+  return ee.Number(fireProg.filter(ee.Filter.eq('area_acre',areaOfNextTS))
+    .aggregate_min('timeStep'));
+};
+
 var getActiveFireLines = function(inFireProg) {
   var sHour = ee.Number(inFireProg.aggregate_min('timeStep'));
   var eHour = ee.Number(inFireProg.aggregate_max('timeStep')).subtract(1);
 
   var activeFireLines = ee.List.sequence(sHour,eHour,1).map(function(timeStep) {
     timeStep = ee.Number(timeStep);
+    var timeStep_next = getNextTS(inFireProg,timeStep);
+    var timeStep_diff = timeStep_next.subtract(timeStep);
+
     var fireProg_curr = ee.Feature(inFireProg.filter(ee.Filter.eq('timeStep',timeStep)).first());
-    var fireProg_next = ee.Feature(inFireProg.filter(ee.Filter.eq('timeStep',timeStep.add(1))).first());
+    var fireProg_next = ee.Feature(inFireProg.filter(ee.Filter.eq('timeStep',timeStep_next)).first());
+
+    // fire state: active = 1, dormant = 0
+    var fireState = ee.Algorithms.If(timeStep_diff.eq(1),1,0);
     
     // polgyon to line string at timestep t
     var fireProg_curr_line = ee.FeatureCollection(fireProg_curr.geometry().coordinates()
@@ -90,11 +123,11 @@ var getActiveFireLines = function(inFireProg) {
     // active fire line defined as the intersection of the difference of t+1 and t
     // and linear ring of the fire perimeter at timestep t
     var fline = fireProg_curr_line.intersection(fireProg_diffVec.buffer(bufferSens),10);
-    
+        
     fline = ee.FeatureCollection(fline.geometries().map(function(x) {
         return ee.Feature(ee.Geometry(x)).set('type',ee.Geometry(x).type());
       })).filter(ee.Filter.neq('type','Point'))
-         .filter(ee.Filter.neq('type','MultiPoint')).geometry();
+        .filter(ee.Filter.neq('type','MultiPoint')).geometry();
     
     // cut off the edges of each linestring that were added from the buffer
     var get_fline_cut = function(x) {
@@ -121,28 +154,34 @@ var getActiveFireLines = function(inFireProg) {
         ee.FeatureCollection(fline.coordinates().map(get_fline_cut)).union().geometry(),
         get_fline_cut(fline.coordinates()).geometry())),
       fline));
-
-    // add perimeters of new fire locations
-    var fline_add = ee.FeatureCollection(
-      fireProg_next.geometry().coordinates().map(function(x) {
-      var newPolyBool = ee.Geometry.Polygon(x)
-        .intersects(fireProg_curr.geometry(),10);
-      var newPoly = ee.Algorithms.If(newPolyBool,
-          ee.Feature(ee.Geometry.Polygon(x)).set('id','Polygon'),
-          ee.Feature(ee.Geometry.LinearRing(ee.Geometry.Polygon(x).coordinates().flatten())).set('id','Point'));
-        return ee.Feature(newPoly);
-      })).filter(ee.Filter.eq('id','Point'));
-
-    fline = ee.FeatureCollection(ee.Algorithms.If(fline_add.size().gt(0),
-       ee.FeatureCollection(fline).merge(fline_add),
-       ee.FeatureCollection(fline)))
-       .union().geometry();
       
+    // fallback method, take the linestring with the largest intersected polygon
+    var fireProg_diffVec2 = ee.FeatureCollection(fireProg_next.geometry().difference(fireProg_curr.geometry())
+      .geometries().map(function(x) {
+        return ee.Feature(ee.Geometry(x)).set('area',ee.Geometry(x).area());
+      })).filter(ee.Filter.gt('area',0)).geometry();
+  
+    var fline2 = fireProg_curr_line
+      .intersection(fireProg_diffVec2);
+
+    fline2 = ee.FeatureCollection(fline2.geometries().map(function(x) {
+        return ee.Feature(ee.Geometry(x)).set('type',ee.Geometry(x).type());
+      })).filter(ee.Filter.neq('type','Point'))
+        .filter(ee.Filter.neq('type','MultiPoint')).geometry();
+    
+    var method = 'default';
+    method = ee.String(ee.Algorithms.If(fline.length().eq(0),'fallback','default'));
+    
+    // if length = 0, use fallback method
+    fline = ee.Geometry(ee.Algorithms.If(fline.length().eq(0),fline2,fline));
+    
     return ee.Feature(fline, {
         timeStep: timeStep,
-        timeStep2: fireProg_next.get('timeStep'),
+        timeStep2: timeStep_next,
         length_km: roundNum(fline.length().divide(1e3),3),
-        perim_km: roundNum(fireProg_curr.geometry().perimeter().divide(1e3),3)
+        perim_km: roundNum(fireProg_curr.geometry().perimeter().divide(1e3),3),
+        fstate: fireState,
+        method: method
       });
   });
   
@@ -162,22 +201,22 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var inFireProg = ee.FeatureCollection(projFolder + 'GOFER' + 
       satMode + '_fireProg/' + fireNameYr + '_fireProg')
     .sort('timeStep');
-    
+
   var activeFireLines = getActiveFireLines(inFireProg);
-  var activeFireLines_filter = activeFireLines.filter(ee.Filter.gt('length_km',0));
-  
+
   var outputName = fireNameYr + '_fireLine';
 
   Export.table.toDrive({
     collection: activeFireLines,
     description: outputName,
     fileFormat: 'CSV',
-    selectors: ['timeStep','timeStep2','length_km','perim_km'],
+    selectors: ['timeStep','timeStep2','length_km','perim_km','fstate','method'],
     folder: 'ee_rfireLine'
   });
   
   Export.table.toDrive({
-    collection: activeFireLines_filter,
+    collection: activeFireLines
+      .filter(ee.Filter.gt('length_km',0)),
     description: outputName,
     fileFormat: 'SHP',
     folder: 'ee_rfireLine'

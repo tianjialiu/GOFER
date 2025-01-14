@@ -1,6 +1,5 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
-    MTBS = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims");
+var MTBS = ee.FeatureCollection("projects/GlobalFires/MTBS/MTBS_Perims");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 // =========================================
 // Export_ParamSens.js
@@ -105,7 +104,8 @@ var getFireConf = function(fireDict,eHour,fireNameYr,parallaxAdj_val) {
 
   var input_confidence = max_confidence[satMode];
   
-  var smoothed_confidence = input_confidence.clip(fireDict.AOI)
+  var smoothed_confidence = input_confidence
+    .clip(fireDict.AOIbuf)
     .reduceNeighborhood({
       'reducer': ee.Reducer.mean(),
       'kernel': input_kernel,
@@ -120,40 +120,13 @@ var getFirePerim = function(fireDict,smoothed_confidence,confidence_cutoff) {
 
   var affected_areas = high_confidence
     .reduceToVectors({
-      scale: 50, 
-      maxPixels: 1e10,
+      scale: 50,
       geometry: fireDict.AOI,
       tileScale: fireDict.tileScale,
       bestEffort: true
     }).filter(ee.Filter.eq('label', 1));
 
   return affected_areas;
-};
-
-// Land cover, NLCD
-var landcover = nlcd.filter(ee.Filter.calendarRange(2019,2019,'year')).first()
-  .select('landcover');
-var nlcdProj = nlcd.first().projection();
-
-var landcover = landcover.expression(
-  '(lc==11) + (lc==12)*2 + (lc>=21 & lc<=24)*3 + (lc==31)*4' +
-  '+ (lc>=41 & lc<=43)*5 + (lc==52)*6 + (lc==71)*7' +
-  '+ (lc>=81 & lc<=82)*8 + (lc>=90 & lc<=95)*9',
-    {lc: landcover});
-
-// Calculate burned area within fire perimeter, in acres
-var getFireArea = function(fireDict,affected_areas_smoothed) {
-  var burn_lc = landcover.expression('(lc >= 5 & lc <= 7)', {lc: landcover}).selfMask();
-  
-  return burn_lc.rename('area').reduceRegion({
-      reducer: ee.Reducer.count().unweighted(),
-      geometry: affected_areas_smoothed,
-      crs: nlcdProj,
-      scale: nlcdProj.nominalScale(),
-      tileScale: fireDict.tileScale,
-      bestEffort: true
-     }).getNumber('area')
-      .multiply(30*30*0.000247105).round(); 
 };
 
 var getFireProgression = function(fireDict,eHour,confidence_cutoff,fireNameYr,parallaxAdj_val) {
@@ -210,7 +183,6 @@ var getFireStats = function(fireDict,fireName,year,mtbs,holesBool,confidence_cut
       GOESWest_kernel: fireDict.kernels[1],
       Combined_kernel: fireDict.kernels[2],
       GOES_acre: fireProg.geometry().area(100).divide(4047).round(),
-      GOES_veg_acre: fireProg.getNumber('Area'),
       MTBS_acre: mtbs.aggregate_sum('Acres')
     });
   });
@@ -222,6 +194,7 @@ for (var confIdx = 0; confIdx < confidenceList.length; confIdx++) {
   for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
     var fireName = inFiresList[fireIdx][0]; 
     var year = inFiresList[fireIdx][1]; 
+    var fireNameYr = fireName.split(' ').join('_') + '_' + year;
     var holesBool = inFiresList[fireIdx][2]; 
     
     var confidence_cutoffs = ee.List.repeat(confidenceList[confIdx],parallaxAdjList.length);
@@ -230,8 +203,8 @@ for (var confIdx = 0; confIdx < confidenceList.length; confIdx++) {
     var fireParamsYrList = fireParamsList[year];
     var fireDict = fireParamsYrList[fireName];
     fireDict.timeInterval = 1;
-    fireDict.tileScale = 1;
-    var fireNameYr = fireName.split(' ').join('_') + '_' + year;
+    fireDict.tileScale = 1; // use higher tileScale if task throws computation limit error
+    fireDict.AOIbuf = fireDict.AOI.bounds().buffer(5000).bounds();
 
     // MTBS
     var mtbs_fire = MTBS

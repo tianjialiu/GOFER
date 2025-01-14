@@ -153,7 +153,8 @@ var getFireConf = function(fireDict,inHour,fireNameYr) {
 
   var input_confidence = max_confidence[satMode];
   
-  var smoothed_confidence = input_confidence.clip(fireDict.AOI)
+  var smoothed_confidence = input_confidence
+    .clip(fireDict.AOIbuf)
     .reduceNeighborhood({
       'reducer': ee.Reducer.mean(),
       'kernel': input_kernel,
@@ -297,7 +298,8 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   // Fire Parameters
   var fireParamsYrList = fireParamsList[year];
   var fireDict = fireParamsYrList[fireName];
-
+  fireDict.AOIbuf = fireDict.AOI.bounds().buffer(5000).bounds();
+  
   for (var iCutoff = 0; iCutoff < confidence_cutoffs.length; iCutoff++) {
     var confidence_cutoff = confidence_cutoffs[iCutoff];
     var inFireProg = ee.FeatureCollection(projFolder + 'GOFER' + 

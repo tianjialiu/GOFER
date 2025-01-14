@@ -3,7 +3,8 @@
 // -----------------------------------------
 // export ancillary stats for fire
 // perimeters
-// fireProg, rfireLine -> fireProgStats
+// fireProg, rfireLine ->
+// fireProgStats, scaleVals
 // -----------------------------------------
 // @author Tianjia Liu (embrslab@gmail.com)
 // =========================================
@@ -149,6 +150,12 @@ var get_fireProgStats = function(inFireProg,inFireLine) {
   return ee.FeatureCollection(fire_spread_ts);
 };
 
+var setMeta = function(x) {
+  return x.set('fireName',fireName).set('year',year);
+};
+
+
+// fireProgStats
 for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var fireName = inFiresList[fireIdx][0]; 
   var year = inFiresList[fireIdx][1]; 
@@ -164,12 +171,6 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var fireProgStats = get_fireProgStats(inFireProg,inFireLine);
   var outputName = fireName.split(' ').join('_') + '_' + year +
       '_fireProgStats';
-      
-  Export.table.toAsset({
-    collection: fireProgStats,
-    description: outputName,
-    assetId: projFolder + 'GOFER' + satMode + '_fireProgStats/' + outputName,
-  });
   
   Export.table.toDrive({
     collection: fireProgStats,
@@ -180,3 +181,26 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
     folder: 'ee_fireStats'
   });
 }
+
+// scaleVals
+var scaleVals = [];
+for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
+  var fireName = inFiresList[fireIdx][0]; 
+  var year = inFiresList[fireIdx][1];
+  var fireNameYr = fireName.split(' ').join('_') + '_' + year;
+  
+  var scaleValFire = ee.FeatureCollection(projFolder + 'GOFER' + satMode + '_scaleVal/' + 
+    fireNameYr + '_scaleVal').sort('timeStep');
+    
+  scaleVals[fireIdx] = scaleValFire.map(setMeta);
+}
+
+scaleVals = ee.FeatureCollection(scaleVals).flatten();
+
+Export.table.toDrive({
+  collection: scaleVals,
+  description: 'scaleVal_' + satMode,
+  selectors: ['fireName','year','timeStep','scaleVal'],
+  folder: 'ee_fireStats'
+});
+

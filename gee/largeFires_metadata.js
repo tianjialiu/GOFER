@@ -47,7 +47,7 @@ var fireParamsList = {
       DINS: ['CALNU 019376'] // CAL FIRE DINS - INCIDENTNU
     },
     'Walker': {
-      // CAL FIRE: https://www.fire.ca.gov/incidents/2022/9/1/walker-fire/
+      // CAL FIRE: https://www.fire.ca.gov/incidents/2019/9/4/walker-fire
       // InciWeb: https://inciweb.nwcg.gov/incident/6568/
       state: 'CA',
       official: 54612,
@@ -76,7 +76,7 @@ var fireParamsList = {
         [-122.98,40.32],[-123.07,40.50],[-123.64,40.50],[-123.64,40.07],
         [-123.25,39.94]
       ]),
-      stDate: 'Aug 16, 2020 8:37 PM', // CAL FIRE
+      stDate: 'August 16, 2020 8:37 PM', // CAL FIRE
       // manual start time correction based on active fire timeseries
       start: ee.Date.parse('Y-MM-dd HH','2020-08-16 21'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-10-18 21'),
@@ -93,7 +93,7 @@ var fireParamsList = {
       official: 115997,
       ignition: ee.Geometry.Point([-117.868,34.241]),
       AOI: ee.Geometry.Rectangle([-118.2,34.13,-117.71,34.55]),
-      stDate: 'Sep 6, 2020 12:21 PM', // InciWeb
+      stDate: 'September 6, 2020 12:21 PM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2020-09-06 19'),
       end: ee.Date.parse('Y-MM-dd HH','2020-10-07 18'),
       nHour: 743,
@@ -111,7 +111,7 @@ var fireParamsList = {
       ignition: ee.Geometry.Point([-119.261175,37.19147]),
       AOI: ee.Geometry.Polygon([[-119.6,36.96],[-119.6,37.72],[-118.88,37.72],
         [-118.88,37.23],[-119.07,37.23],[-119.07,36.96]]),
-      stDate: 'Sep 4, 2020 6:21 PM', // CAL FIRE
+      stDate: 'September 4, 2020 6:21 PM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2020-09-05 01'),
       end: ee.Date.parse('Y-MM-dd HH','2020-11-09 20'),
       nHour: 1579,
@@ -144,7 +144,7 @@ var fireParamsList = {
       official: 124924,
       ignition: ee.Geometry.Point([-121.602,36.123]),
       AOI: ee.Geometry.Rectangle([-121.77,35.93,-121.23,36.25]),
-      stDate: 'Aug 18, 2020 8:15 PM', // InciWeb
+      stDate: 'August 18, 2020 8:15 PM', // InciWeb
       // manual start time correction based on active fire timeseries
       start: ee.Date.parse('Y-MM-dd HH','2020-08-18 18'),
       end: ee.Date.parse('Y-MM-dd HH','2020-09-22 22'),
@@ -196,7 +196,7 @@ var fireParamsList = {
       official: 363220,
       ignition: ee.Geometry.Point([-122.14864,38.48193]),
       AOI: ee.Geometry.Rectangle([-123.27,38.26,-121.92,38.98]), // AOI: ee.Geometry.Rectangle([-122.73,38.26,-121.92,38.98]),
-      stDate: 'Aug 17, 2020 6:40 AM', // CAL FIRE
+      stDate: 'August 17, 2020 6:40 AM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2020-08-17 13'),
       end: ee.Date.parse('Y-MM-dd HH','2020-08-30 00'),
       nHour: 299,
@@ -213,7 +213,7 @@ var fireParamsList = {
       ignition: ee.Geometry.Point([-120.931,40.091]),
       AOI: ee.Geometry.Polygon([[-121.58,39.47],[-121.58,39.84],[-121.45,40.00],
         [-120.70,40.00],[-120.70,39.47]]),
-      stDate: 'Aug 17, 2020 9:00 AM', // InciWeb
+      stDate: 'August 17, 2020 9:00 AM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2020-08-17 16'),
       end: ee.Date.parse('Y-MM-dd HH','2020-10-03 23'),
       nHour: 1135,
@@ -229,7 +229,7 @@ var fireParamsList = {
       official: 144698,
       ignition: ee.Geometry.Point([-123.433,41.185]),
       AOI: ee.Geometry.Rectangle([-123.68,40.95,-123.19,41.29]),
-      stDate: 'Jul 27, 2020 11:03 AM', // InciWeb
+      stDate: 'July 27, 2020 11:03 AM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2020-07-27 18'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-10-10 05'),
       nHour: 1787,
@@ -246,7 +246,7 @@ var fireParamsList = {
       ignition: ee.Geometry.Point([-121.30435,37.439437]),
       AOI: ee.Geometry.Polygon([[-121.55,37.07],[-121.93,37.45],[-121.93,37.65],
         [-121.11,37.65],[-121.11,37.07]]),
-      stDate: 'Aug 16, 2020 4:00 AM', // InciWeb
+      stDate: 'August 16, 2020 4:00 AM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2020-08-16 11'),
       end: ee.Date.parse('Y-MM-dd HH','2020-09-09 00'),
       nHour: 565,
@@ -264,7 +264,7 @@ var fireParamsList = {
       AOI: ee.Geometry.Polygon([[-123.56,42.15],
         [-123.88,42.07],[-123.88,41.91],[-123.62,41.84],[-123.59,41.72],
         [-123.13,41.75],[-123.13,42.13],[-123.56,42.15]]),
-      stDate: 'Sep 8, 2020 6:43 AM', // InciWeb
+      stDate: 'September 8, 2020 6:43 AM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2020-09-08 13'),
       end: ee.Date.parse('Y-MM-dd HH','2020-09-24 01'),
       nHour: 372,
@@ -284,7 +284,7 @@ var fireParamsList = {
         [-118.93,36.03],[-118.93,36.48],[-118.56,36.48],[-118.48,36.38],
         [-118.22,36.38],[-118.22,36.03],
       ]),
-      stDate: 'Aug 19, 2020 7:15 AM', // InciWeb
+      stDate: 'August 19, 2020 7:15 AM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2020-08-19 14'), 
       end: ee.Date.parse('Y-MM-dd HH','2020-10-08 20'),
       nHour: 1206,
@@ -380,7 +380,7 @@ var fireParamsList = {
         [-120.64,38.51],[-120.76,38.64],[-120.76,38.98],[-119.85,38.98],
         [-119.85,38.82],[-120.06,38.51]
       ]),
-      stDate: 'Aug 14, 2021 6:54 PM', // CAL FIRE
+      stDate: 'August 14, 2021 6:54 PM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2021-08-15 01'),
       end: ee.Date.parse('Y-MM-dd HH','2021-09-13 02'),
       nHour: 697,
@@ -405,7 +405,7 @@ var fireParamsList = {
         [-121.23,40.85],[-120.23,39.8],
       ]),
       AOIsmallTS: 70,
-      stDate: 'Jul 13, 2021 5:15 PM', // CAL FIRE
+      stDate: 'July 13, 2021 5:15 PM', // CAL FIRE
       start: ee.Date.parse('Y-MM-dd HH','2021-07-14 00'),
       end: ee.Date.parse('Y-MM-dd HH','2021-09-10 06'),
       nHour: 1398,

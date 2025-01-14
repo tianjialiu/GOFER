@@ -105,12 +105,6 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var fireIg = get_fireIg(inFireProg);
 
   var outputName = fireName.split(' ').join('_') + '_' + year + '_fireIg';
-
-  Export.table.toAsset({
-    collection: fireIg,
-    description: outputName,
-    assetId: projFolder + 'GOFER' + satMode + '_fireIg/' + outputName,
-  });
   
   Export.table.toDrive({
     collection: fireIg,

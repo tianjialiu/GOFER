@@ -15,7 +15,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (embrslab@gmail.com)
-// Last updated: December 5, 2024
+// Last updated: January 13, 2025
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -37,7 +37,7 @@ var burn_severity_labels = ['Unburned to Low','Low','Moderate','High','Increased
 var cfline_labels = ['c = 0.05','c = 0.1', 'c = 0.25', 'c = 0.5', 'c = 0.75', 'c = 0.9'];
 var cfline_palette = ['#2B83BA','#87CEEB','#9DD3A7','#EBC570','FF7F00','#D7191C'];
 
-var goferVersionList = {
+var goferTypeList = {
   'GOFER-Combined': 'C',
   'GOFER-East': 'E',
   'GOFER-West': 'W'
@@ -106,7 +106,7 @@ var chartFireGrowthCumul = function(fireProg,localStartTime) {
   
   return ui.Chart.feature.byFeature({
     features: fireProg,
-    xProperty: 'timeStep',
+    xProperty: 'timestep',
     yProperties: ['area_km2'],
   }).setOptions({
       title: 'Cumulative Fire-Wide Area',
@@ -132,8 +132,8 @@ var chartFireGrowth = function(fireProgStats,localStartTime) {
   
   return ui.Chart.feature.byFeature({
     features: fireProgStats,
-    xProperty: 'timeStep',
-    yProperties: ['dArea_km2'],
+    xProperty: 'timestep',
+    yProperties: ['dfarea'],
   }).setOptions({
       title: 'Growth in Fire-Wide Area',
       titleTextStyle: {fontSize: '15'},
@@ -154,12 +154,12 @@ var chartFireGrowth = function(fireProgStats,localStartTime) {
   });
 };
   
-var chartFireLine = function(fireLine,localStartTime) {
+var chartFireLine = function(fireLine,fireLineType,localStartTime) {
   
   return ui.Chart.feature.byFeature({
     features: fireLine,
-    xProperty: 'timeStep',
-    yProperties: ['length_km'],
+    xProperty: 'timestep',
+    yProperties: [fireLineType],
   }).setOptions({
       title: 'Active Fire Line Length',
       titleTextStyle: {fontSize: '15'},
@@ -184,8 +184,8 @@ var chartFireSpread = function(fireLine,localStartTime) {
   
   return ui.Chart.feature.byFeature({
     features: fireLine,
-    xProperty: 'timeStep',
-    yProperties: ['mae_spread_kmh','awe_spread_kmh'],
+    xProperty: 'timestep_hh',
+    yProperties: ['maefspread','awefspread'],
   }).setSeriesNames(['MAE','AWE']).setOptions({
       title: 'Fire Spread',
       titleTextStyle: {fontSize: '15'},
@@ -328,7 +328,7 @@ var getInfoPanel = function(map,fireDict,fireName,fireInfo) {
   infoPanel.add(ui.Label('Fire Information',
     {fontSize:'18px',fontWeight:'bold',margin: '8px 0 0 0'}));
   
-  infoPanel.add(ui.Label('This app shows the hourly wildfire progression derived from GOES-East and GOES-West geostationary active fire detections. The three versions of GOFER are GOFER-East, GOFER-West, and GOFER-Combined, which are derived from only GOES-East, only GOES-West, or both GOES satellites, respectively. Once a fire is loaded, drag the left-hand bar to reveal another map showing a timeslice of the fire perimeter and active fire lines. Use the text box to change the timestep or click on a point in the active fire line chart to move to a specific timestep. Note that layers may take a few seconds to load.',
+  infoPanel.add(ui.Label('This app shows the hourly wildfire progression derived from GOES-East and GOES-West geostationary active fire detections. The three GOFER product types are GOFER-East, GOFER-West, and GOFER-Combined, which are derived from only GOES-East, only GOES-West, or both GOES satellites, respectively. Once a fire is loaded, drag the left-hand bar to reveal another map showing a timeslice of the fire perimeter and active fire lines. Use the text box to change the timestep or click on a point in the active fire line chart to move to a specific timestep. Note that layers may take a few seconds to load.',
     {fontSize:'12.5px', margin:'0', padding:'5px 12px 0 0'}));
   
   var fireInfoTable = ui.Panel({
@@ -430,32 +430,29 @@ var mapGrid = ui.Panel([map_panels],
   
 var mainTitle = ui.Label('GOFER Product Visualization',
   {stretch: 'horizontal', textAlign: 'left', fontWeight: 'bold',
-    fontSize: '24px', backgroundColor:'FFFFFF', margin: '6px 8px 3px 15px'});
-var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation',
+    fontSize: '24px', backgroundColor:'FFFFFF', margin: '6px 8px 0px 12px'});
+var subTitle = ui.Label('GOFER: GOES-Observed Fire Event Representation, version 0.2',
   {textAlign: 'left',
-    fontSize: '16px', color: '#777', margin: '0 18px 6px 15px'});
+    fontSize: '16px', color: '#777', margin: '0 18px 5px 12px'});
     
-var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '3px 5px 3px 0px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327264');
-var codeLabel = ui.Label('[Code]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
-var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-16-1395-2024');
-var fireTrackingLabel = ui.Label('UCI-NASA Fire Tracking: ', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#000000'});
-var uciLabel = ui.Label('[UCI]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://www.ess.uci.edu/~uci-nasa-firetracking/');
-var nasaLabel = ui.Label('[NASA]', {textAlign: 'left', margin: '3px 5px 3px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://earth-information-system.github.io/fireatlas/docs/data_overview.html#published-datasets');
-var fireTrackingPanel = ui.Panel(
-  [fireTrackingLabel,uciLabel,nasaLabel],
-  ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'}
-);
+var dataLabel = ui.Label('[Data]', {textAlign: 'left', margin: '0px 5px 6px 12px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5281/zenodo.8327264');
+var codeLabel = ui.Label('[Code/Updates]', {textAlign: 'left', margin: '0px 5px 6px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://github.com/tianjialiu/GOFER');
+var paperLabel = ui.Label('[Paper]', {textAlign: 'left', margin: '0px 5px 6px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://doi.org/10.5194/essd-16-1395-2024');
+var fireTrackingLabel = ui.Label('UCI-NASA Fire Tracking: ', {textAlign:'left', margin: '0px 5px 6px 6px', fontSize: '12.5px', color: '#000000'});
+var uciLabel = ui.Label('[UCI]', {textAlign: 'left', margin: '0px 5px 6px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://www.ess.uci.edu/~uci-nasa-firetracking/');
+var nasaLabel = ui.Label('[NASA]', {textAlign: 'ledt', margin: '0px 5px 6px 3px', fontSize: '12.5px', color: '#5886E8'}, 'https://earth-information-system.github.io/fireatlas/docs/data_overview.html#published-datasets');
+
 
 var subTitleLinks = ui.Panel([
   subTitle,
-  ui.Panel([dataLabel, codeLabel, paperLabel, fireTrackingPanel],
+  ui.Panel([dataLabel, codeLabel, paperLabel, fireTrackingLabel, uciLabel, nasaLabel],
     ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'})
-],ui.Panel.Layout.Flow('horizontal'), {stretch: 'horizontal'});
+],ui.Panel.Layout.Flow('vertical'), {stretch: 'horizontal'});
 
 // default app configuration
 var fireName = 'Creek';
 var year = '2020';
-var goferVersionName = 'GOFER-Combined';
+var goferTypeName = 'GOFER-Combined';
 
 var fireYrSelect = ui.Select({
   items: yrList,
@@ -489,7 +486,7 @@ var fireSelect = ui.Select({
   }
 });
 
-var versionSelect = ui.Select({
+var typeSelect = ui.Select({
   items: ['GOFER-Combined','GOFER-East','GOFER-West'],
   placeholder: 'GOFER-Combined',
   value: 'GOFER-Combined',
@@ -502,17 +499,19 @@ var yearSelectInfo = ui.Label('Year: ',
   {margin: '14px 0px 8px 16px', color: '#999'});
 var fireSelectInfo = ui.Label('Fire Name: ',
   {margin: '14px 0px 8px 0px', color: '#999'});
-var versionSelectInfo = ui.Label('GOFER Version: ',
+var typeSelectInfo = ui.Label('GOFER Type: ',
   {margin: '14px 0px 8px 0px', color: '#999'});
 var goButton = ui.Button({label: 'Go!',  style: {stretch: 'horizontal'}});
 
 var fireSelectPanel = ui.Panel([yearSelectInfo,fireYrSelect,
-  fireSelectInfo,fireSelect,versionSelectInfo,versionSelect,goButton],
+  fireSelectInfo,fireSelect,typeSelectInfo,typeSelect,goButton],
   ui.Panel.Layout.Flow('horizontal'));
   
 var mainPanel = ui.Panel([
-  ui.Panel([mainTitle,subTitleLinks],
-    ui.Panel.Layout.Flow('vertical'),{stretch:'horizontal'}),fireSelectPanel],
+    ui.Panel([mainTitle,subTitleLinks],
+      ui.Panel.Layout.Flow('vertical'),{stretch:'horizontal'}),
+    fireSelectPanel
+  ],
   ui.Panel.Layout.Flow('horizontal'),
   {stretch: 'horizontal'});
 
@@ -654,8 +653,8 @@ goButton.onClick(function() {
   var fireName = fireSelect.getValue();
   
   var fireParamsYrList = fireParamsList[year];
-  var goferVersionName = versionSelect.getValue();
-  var goferVersion = goferVersionList[goferVersionName];
+  var goferTypeName = typeSelect.getValue();
+  var goferType = goferTypeList[goferTypeName];
   var fireNameYr = fireName.split(' ').join('_') + '_' + year;
   
   var Map1 = ui.Map().setOptions('TERRAIN'); Map1.style().set({cursor:'crosshair'});
@@ -692,32 +691,39 @@ goButton.onClick(function() {
   var localStartTime = UTCtoLT(fireDict.start,timeZoneList[fireDict.state]).getInfo();
   
   var projFolder = 'projects/GlobalFires/';
-  var GOFER_fireProg = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
-      goferVersion + '_fireProg/' + fireNameYr + '_fireProg').sort('timeStep',false);
-  var GOFER_cfireLine = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
-      goferVersion + '_cfireLine/' + fireNameYr + '_fireLine').sort('timeStep',false);
-  var GOFER_rfireLine = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
-      goferVersion + '_rfireLine/' + fireNameYr + '_fireLine').sort('timeStep',false);
-  var GOFER_summaryStats = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
-      goferVersion + '_fireProgStats/' + fireNameYr + '_fireProgStats').sort('timeStep',false);
-  var GOFER_fireIg = ee.FeatureCollection('projects/GlobalFires/GOFER/GOFER' + 
-      goferVersion + '_fireIg/' + fireNameYr + '_fireIg').sort('timeStep',false);
+  var projFolder_GOFER = projFolder + 'GOFER/GOFER-current/GOFER';
+  
+  var yearInt = ee.Number(ee.String(year).decodeJSON());
+  var filterYr = ee.Filter.eq('fyear',yearInt);
+  var filterFireName = ee.Filter.eq('fname',fireName);
+
+  var GOFER_fireProg = ee.FeatureCollection(projFolder_GOFER + goferType + '_fireProg')
+    .filter(filterYr).filter(filterFireName).sort('timestep',false);
+  var GOFER_cfireLine = ee.FeatureCollection(projFolder_GOFER + goferType + '_cfireLine')
+    .filter(filterYr).filter(filterFireName).sort('timestep',false);
+  var GOFER_rfireLine = ee.FeatureCollection(projFolder_GOFER + goferType + '_rfireLine')
+    .filter(filterYr).filter(filterFireName).sort('timestep',false);
+  var GOFER_summaryStats = ee.FeatureCollection(projFolder_GOFER + goferType + '_summary')
+    .filter(filterYr).filter(filterFireName).sort('timestep',false);
+  var GOFER_fireIg = ee.FeatureCollection(projFolder_GOFER + goferType + '_fireIg')
+    .filter(filterYr).filter(filterFireName).sort('timestep',false);
     
   var setTS_FEDS = function(x) {
-    return x.set('timeStep',ee.Date.parse('Y-M-d Hm',x.get('utcTime'))
+    return x.set('timestep',ee.Date.parse('Y-M-d Hm',x.get('utcTime'))
       .difference(fireDict.start,'hour'));
     };
   
-  var minTS = GOFER_fireProg.aggregate_min('timeStep');
-  var maxTS = GOFER_fireProg.aggregate_max('timeStep');
+  var minTS = GOFER_fireProg.aggregate_min('timestep');
+  var maxTS = GOFER_fireProg.aggregate_max('timestep');
   
   var FEDS_fireProg = FEDS.filter(ee.Filter.inList('ICS',ICS))
-    .map(setTS_FEDS).sort('timeStep',false)
-    .filter(ee.Filter.gte('timeStep',0));
+    .map(setTS_FEDS).sort('timestep',false)
+    .filter(ee.Filter.gte('timestep',0));
   
-  var area95 = ee.Number(GOFER_fireProg.aggregate_max('area_km2')).multiply(0.95);
-  var maxTS_area95 = GOFER_fireProg.filter(ee.Filter.gte('area_km2',area95)).sort('timeStep').first()
-      .getNumber('timeStep').getInfo();
+  var area95 = ee.Number(GOFER_fireProg.aggregate_max('farea')).multiply(0.95);
+  var maxTS_area95 = GOFER_fireProg.filter(ee.Filter.gte('farea',area95))
+    .sort('timestep').first()
+    .getNumber('timestep').getInfo();
   
   var FRAP_perim = FRAP.filter(ee.Filter.inList('ICS',ICS));
   
@@ -745,25 +751,25 @@ goButton.onClick(function() {
     'Burn severity (MTBS)', false, 0.9);
     
   // GOFER fire progression
-  Map1.addLayer(ee.Image().paint(GOFER_fireProg,'timeStep'),
+  Map1.addLayer(ee.Image().paint(GOFER_fireProg,'timestep'),
     {min:1, max: maxTS_area95, palette: colPal.SpectralFancy, opacity:0.8},
       'GOFER fire progression');
-  Map1.addLayer(ee.Image().paint(GOFER_fireProg,'timeStep',1),
+  Map1.addLayer(ee.Image().paint(GOFER_fireProg,'timestep',1),
     {min:1, max: maxTS_area95, palette: ['black'], opacity:0.8},
       'GOFER fire progression, outline');
   Map1.addLayer(GOFER_fireIg, {color: 'red', opacity:0.8},
       'GOFER fire ignitions',false);
       
   // FEDS fire progression
-  Map1.addLayer(ee.Image().paint(FEDS_fireProg,'timeStep'),
+  Map1.addLayer(ee.Image().paint(FEDS_fireProg,'timestep'),
     {min:1, max: maxTS_area95, palette: colPal.SpectralFancy, opacity:0.8},
       'FEDS fire progression',false);
-  Map1.addLayer(ee.Image().paint(FEDS_fireProg,'timeStep',1),
+  Map1.addLayer(ee.Image().paint(FEDS_fireProg,'timestep',1),
     {min:1, max: maxTS_area95, palette: ['black'], opacity:0.8},
       'FEDS fire progression, outline',false);
   
-  var GOFER_perim = GOFER_fireProg.sort('timeStep',false).first().geometry();
-  var FEDS_perim = FEDS_fireProg.sort('timeStep',false).first().geometry();
+  var GOFER_perim = GOFER_fireProg.sort('timestep',false).first().geometry();
+  var FEDS_perim = FEDS_fireProg.sort('timestep',false).first().geometry();
 
   var fireInfo = ee.FeatureCollection([
     ee.Feature(null, {
@@ -852,8 +858,9 @@ goButton.onClick(function() {
   });
   chartPanel.add(growthOptionSelect);
   
-  var fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fireConf',0.05));
-  var fireLineChart = chartFireLine(fireLine,localStartTime);
+  var fireLineType = 'cflinelen';
+  var fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fconf',0.05));
+  var fireLineChart = chartFireLine(fireLine,fireLineType,localStartTime);
   chartPanel.add(fireLineChart);
   
   var flineOptionList = {
@@ -866,32 +873,34 @@ goButton.onClick(function() {
   };
   
   var flineOptionSelect = ui.Select({
-    items: flineOptionList[goferVersion],
+    items: flineOptionList[goferType],
     value: 'cfline, c=0.05',
     onChange: function(selected) {
       chartPanel.remove(chartPanel.widgets().get(2));
+      fireLineType = 'cflinelen';
       if (selected == 'cfline, c=0.05') {
-        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fireConf',0.05));
+        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fconf',0.05));
       }
       if (selected == 'cfline, c=0.1') {
-        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fireConf',0.1));
+        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fconf',0.1));
       }
       if (selected == 'cfline, c=0.25') {
-        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fireConf',0.25));
+        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fconf',0.25));
       }
       if (selected == 'cfline, c=0.5') {
-        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fireConf',0.5));
+        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fconf',0.5));
       }
       if (selected == 'cfline, c=0.75') {
-        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fireConf',0.75));
+        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fconf',0.75));
       }
       if (selected == 'cfline, c=0.9') {
-        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fireConf',0.9));
+        fireLine = GOFER_cfireLine.filter(ee.Filter.eq('fconf',0.9));
       }
       if (selected == 'rfline') {
         fireLine = GOFER_rfireLine;
+        fireLineType = 'rflinelen';
       }
-      var fireLineChart = chartFireLine(fireLine,localStartTime);
+      var fireLineChart = chartFireLine(fireLine,fireLineType,localStartTime);
       chartPanel.insert(2,fireLineChart);
       
       fireLineChart.onClick(function(clicked_value) {
@@ -938,11 +947,11 @@ goButton.onClick(function() {
   
   var inTS = minTS;
   var GOFER_fireProg_slice = GOFER_fireProg
-    .filter(ee.Filter.inList('timeStep',[inTS,ee.Number(inTS).add(1)]));
+    .filter(ee.Filter.inList('timestep',[inTS,ee.Number(inTS).add(1)]));
   var GOFER_fireIg_slice = GOFER_fireIg
-    .filter(ee.Filter.lte('timeStep',inTS));
-  var GOFER_rfireLine_slice = GOFER_rfireLine.filter(ee.Filter.eq('timeStep',inTS));
-  var GOFER_cfireLine_slice = GOFER_cfireLine.filter(ee.Filter.eq('timeStep',inTS));
+    .filter(ee.Filter.lte('timestep',inTS));
+  var GOFER_rfireLine_slice = GOFER_rfireLine.filter(ee.Filter.eq('timestep',inTS));
+  var GOFER_cfireLine_slice = GOFER_cfireLine.filter(ee.Filter.eq('timestep',inTS));
   
   var cThreshList = {
     'C': ee.List([0.05,0.1,0.25,0.5,0.75,0.9]),
@@ -950,11 +959,11 @@ goButton.onClick(function() {
     'W': ee.List([0.05,0.1,0.25,0.5,0.75])
   };
   
-  var cThresh = cThreshList[goferVersion];
+  var cThresh = cThreshList[goferType];
 
   GOFER_cfireLine_slice = ee.FeatureCollection(ee.List.sequence(0,cThresh.size().subtract(1),1)
     .map(function(level) {
-      var cfireLine_slice_thresh = GOFER_cfireLine_slice.filter(ee.Filter.eq('fireConf',cThresh.get(level))).first();
+      var cfireLine_slice_thresh = GOFER_cfireLine_slice.filter(ee.Filter.eq('fconf',cThresh.get(level))).first();
       var cfireLine_slice_thresh_feat = ee.Feature(cfireLine_slice_thresh).set('level',level);
       cfireLine_slice_thresh_feat = ee.Algorithms.If(cfireLine_slice_thresh_feat.getNumber('fstate').eq(1),
         cfireLine_slice_thresh_feat,cfireLine_slice_thresh_feat.setGeometry(null));
@@ -990,11 +999,11 @@ goButton.onClick(function() {
   chartWrapper2.add(hideShowChartButton2).add(infoPanelSlice).add(chartPanel2);
   
   var GOFER_stats_slice = GOFER_rfireLine_slice.map(function(x) {
-      return x.set('Units','km').set('Variable','rfline')
-        .select(['Variable','length_km','Units','fstate'],['Variable','Value','Units','IsActive']);
+      return x.set('Units','km').set('Variable','rflinelen')
+        .select(['Variable','rflinelen','Units','fstate'],['Variable','Value','Units','IsActive']);
   }).merge(GOFER_cfireLine_slice.map(function(x) {
-      return x.set('Units','km').set('Variable',ee.String('cfline, c=').cat(x.get('fireConf')))
-        .select(['Variable','length_km','Units','fstate'],['Variable','Value','Units','IsActive']);
+      return x.set('Units','km').set('Variable',ee.String('cfline, c=').cat(x.get('fconf')))
+        .select(['Variable','cflinelen','Units','fstate'],['Variable','Value','Units','IsActive']);
     }));
         
   var GOFER_stats_slice_chart = ui.Chart.feature.byFeature(GOFER_stats_slice,'Variable',['Value','Units','IsActive'])
@@ -1002,15 +1011,15 @@ goButton.onClick(function() {
   
   chartPanel2.add(GOFER_stats_slice_chart);
 
-  Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timeStep'),
+  Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timestep'),
     {min: 1, max: maxTS_area95, palette: ['black'], opacity: 0.8},
       'GOFER fire progression slice');
-  Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timeStep',1),
+  Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timestep',1),
     {min: 1, max: maxTS_area95, palette: ['white'], opacity: 0.8},
       'GOFER fire progression slice');
   Map2.addLayer(GOFER_fireIg_slice, {color: 'red', opacity:0.8},
     'GOFER fire ignitions');
-  Map2.addLayer(ee.Image().paint(GOFER_rfireLine_slice,'timeStep',2),
+  Map2.addLayer(ee.Image().paint(GOFER_rfireLine_slice,'timestep',2),
     {min: 1, max: maxTS_area95, palette: ['red'], opacity: 0.8},
       'GOFER rfireLine');
   Map2.addLayer(ee.Image().paint(GOFER_cfireLine_slice,'level',3),
@@ -1043,30 +1052,30 @@ goButton.onClick(function() {
         Map2.remove(Map2.layers().get(0));
       }
       var GOFER_fireProg_slice = GOFER_fireProg
-        .filter(ee.Filter.inList('timeStep',[inTS,ee.Number(inTS).add(1)]));
+        .filter(ee.Filter.inList('timestep',[inTS,ee.Number(inTS).add(1)]));
       var GOFER_fireIg_slice = GOFER_fireIg
-        .filter(ee.Filter.lte('timeStep',inTS));
-      var GOFER_rfireLine_slice = GOFER_rfireLine.filter(ee.Filter.eq('timeStep',inTS));
-      var GOFER_cfireLine_slice = GOFER_cfireLine.filter(ee.Filter.eq('timeStep',inTS));
+        .filter(ee.Filter.lte('timestep',inTS));
+      var GOFER_rfireLine_slice = GOFER_rfireLine.filter(ee.Filter.eq('timestep',inTS));
+      var GOFER_cfireLine_slice = GOFER_cfireLine.filter(ee.Filter.eq('timestep',inTS));
         
       GOFER_cfireLine_slice = ee.FeatureCollection(ee.List.sequence(0,cThresh.size().subtract(1),1)
         .map(function(level) {
-          var cfireLine_slice_thresh = GOFER_cfireLine_slice.filter(ee.Filter.eq('fireConf',cThresh.get(level))).first();
+          var cfireLine_slice_thresh = GOFER_cfireLine_slice.filter(ee.Filter.eq('fconf',cThresh.get(level))).first();
           var cfireLine_slice_thresh_feat = ee.Feature(cfireLine_slice_thresh).set('level',level);
           cfireLine_slice_thresh_feat = ee.Algorithms.If(cfireLine_slice_thresh_feat.getNumber('fstate').eq(1),
             cfireLine_slice_thresh_feat,cfireLine_slice_thresh_feat.setGeometry(null));
           return ee.Feature(cfireLine_slice_thresh_feat);
         }));
         
-      Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timeStep'),
+      Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timestep'),
         {min: 1, max: maxTS_area95, palette: ['black'], opacity: 0.8},
           'GOFER fire progression slice');
-      Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timeStep',1),
+      Map2.addLayer(ee.Image().paint(GOFER_fireProg_slice,'timestep',1),
         {min: 1, max: maxTS_area95, palette: ['white'], opacity: 0.8},
           'GOFER fire progression slice');
       Map2.addLayer(GOFER_fireIg_slice, {color: 'red', opacity:0.8},
         'GOFER fire ignitions');
-      Map2.addLayer(ee.Image().paint(GOFER_rfireLine_slice,'timeStep',2),
+      Map2.addLayer(ee.Image().paint(GOFER_rfireLine_slice,'timestep',2),
         {min: 1, max: maxTS_area95, palette: ['red'], opacity: 0.8},
           'GOFER rfireLine');
       Map2.addLayer(ee.Image().paint(GOFER_cfireLine_slice,'level',3),
@@ -1075,10 +1084,10 @@ goButton.onClick(function() {
       
       var GOFER_stats_slice = GOFER_rfireLine_slice.map(function(x) {
         return x.set('Units','km').set('Variable','rfline')
-          .select(['Variable','length_km','Units','fstate'],['Variable','Value','Units','IsActive']);
+          .select(['Variable','rflinelen','Units','fstate'],['Variable','Value','Units','IsActive']);
         }).merge(GOFER_cfireLine_slice.map(function(x) {
-          return x.set('Units','km').set('Variable',ee.String('cfline, c=').cat(x.get('fireConf')))
-            .select(['Variable','length_km','Units','fstate'],['Variable','Value','Units','IsActive']);
+          return x.set('Units','km').set('Variable',ee.String('cfline, c=').cat(x.get('fconf')))
+            .select(['Variable','cflinelen','Units','fstate'],['Variable','Value','Units','IsActive']);
         }));
       
       var GOFER_stats_slice_chart = ui.Chart.feature.byFeature(GOFER_stats_slice,'Variable',['Value','Units','IsActive'])

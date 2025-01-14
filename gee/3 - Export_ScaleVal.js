@@ -112,7 +112,8 @@ var getFireScaleVal = function(fireDict,iHour) {
 
   var input_confidence = max_confidence[satMode];
   
-  var smoothed_confidence = input_confidence.clip(fireDict.AOI)
+  var smoothed_confidence = input_confidence
+    .clip(fireDict.AOIbuf)
     .reduceNeighborhood({
       'reducer': ee.Reducer.mean(),
       'kernel': input_kernel,
@@ -120,7 +121,7 @@ var getFireScaleVal = function(fireDict,iHour) {
     });
 
   var scaleVal = smoothed_confidence.reduceRegions({
-    collection: fireDict.AOI,
+    collection: fireDict.AOIbuf,
     reducer: ee.Reducer.max(),
     crs: 'EPSG:4326',
     scale: 50
@@ -151,6 +152,7 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var fireParamsYrList = fireParamsList[year];
   var fireDict = fireParamsYrList[fireName];
   var nHour = fireDict.nHour;
+  fireDict.AOIbuf = fireDict.AOI.bounds().buffer(5000).bounds();
   
   var fireScaleValByHour = getFireScaleImg(fireDict,nHour);
 

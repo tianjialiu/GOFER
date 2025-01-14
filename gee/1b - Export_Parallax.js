@@ -190,7 +190,7 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   // Fire Parameters
   var fireParamsYrList = fireParamsList[year];
   var fireDict = fireParamsYrList[fireName];
-  var AOI = fireDict.AOI.bounds();
+  var AOI = fireDict.AOI.bounds().buffer(5000).bounds();
   
   var demLonLat = ee.Image.pixelLonLat().clip(AOI)
       .reproject({crs: dem.projection(), scale: dem.projection().nominalScale()});
