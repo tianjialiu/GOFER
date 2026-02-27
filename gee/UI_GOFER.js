@@ -15,7 +15,7 @@ var nlcd = ee.ImageCollection("USGS/NLCD_RELEASES/2019_REL/NLCD"),
 // *****************************************************************
 /*
 // @author Tianjia Liu (embrslab@gmail.com)
-// Last updated: June 2, 2025
+// Last updated: February 27, 2026
 */
 // =================================================================
 // **********************   --    Code    --   *********************
@@ -107,7 +107,7 @@ var chartFireGrowthCumul = function(fireProg,localStartTime) {
   return ui.Chart.feature.byFeature({
     features: fireProg,
     xProperty: 'timestep',
-    yProperties: ['area_km2'],
+    yProperties: ['farea'],
   }).setOptions({
       title: 'Cumulative Fire-Wide Area',
       titleTextStyle: {fontSize: '15'},
@@ -835,14 +835,14 @@ goButton.onClick(function() {
   chartPanel = chartPanel.clear();
   var fireGrowthChart = chartFireGrowth(GOFER_summaryStats,localStartTime);
   chartPanel.add(fireGrowthChart);
-  
+
   var growthOptionSelect = ui.Select({
     items: ['Cumulative','Hourly'],
     value: 'Hourly',
     onChange: function(selected) {
       chartPanel.remove(chartPanel.widgets().get(0));
       if (selected == 'Cumulative') {
-        fireGrowthChart = chartFireGrowthCumul(GOFER_fireProg,localStartTime);
+        fireGrowthChart = chartFireGrowthCumul(GOFER_summaryStats,localStartTime);
       }
       if (selected == 'Hourly') {
         fireGrowthChart = chartFireGrowth(GOFER_summaryStats,localStartTime);
