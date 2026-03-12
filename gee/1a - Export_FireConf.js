@@ -38,9 +38,8 @@ var inFiresList = [
   ['Windy','2021']
 ];
 
-// Inputs
-var goes_east_no = '16';
-var goes_west_no = '17';
+// GOFER functions
+var goferFun = require('users/embrslab/GOFER:GOFER_functions.js');
 
 // Metadata
 var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
@@ -54,12 +53,12 @@ var applySmallAOI = function(image,iHour) {
     image.clip(aoi_small),image));
 };
 
-var getFireConf = function(fireDict,startTime,endTime,satNum,iHour) {
+var getFireConf = function(fireDict,startTime,endTime,goes_col,iHour) {
   
   // Satellite data
-  var goes_col = ee.ImageCollection('NOAA/GOES/' + satNum + '/FDCF').select('Mask');
-  var goes_data = goes_col.filterDate(startTime,endTime);
-  var goes_proj = goes_col.filterDate(fireDict.start,fireDict.end)
+  var goes_col_mask = goes_col.select('Mask');
+  var goes_data = goes_col_mask.filterDate(startTime,endTime);
+  var goes_proj = goes_col_mask.filterDate(fireDict.start,fireDict.end)
     .first().projection();
   
   // Conversion from mask codes to confidence values
@@ -114,13 +113,13 @@ var findBandNames = function(endHour) {
   });
 };
 
-var getConfCol = function(fireDict,satNum) {
+var getConfCol = function(fireDict,goes_col) {
   return ee.ImageCollection(ee.List.sequence(1,nHour,1).map(function(iHour) {
     var stTime = fireDict.start;
     var endTime = stTime.advance(iHour,'hour');
     var stRetroTime = endTime.advance(-1,'hour');
   
-    var goesConf = getFireConf(fireDict,stRetroTime,endTime,satNum,iHour);
+    var goesConf = getFireConf(fireDict,stRetroTime,endTime,goes_col,iHour);
     
     return goesConf;
   })).toBands().rename(findBandNames(nHour));
@@ -136,10 +135,14 @@ for (var fireIdx = 0; fireIdx < inFiresList.length; fireIdx++) {
   var nHour = fireDict.nHour;
   var aoi_small = fireDict.AOIsmall;
   var aoi_smallTS = fireDict.AOIsmallTS;
+  var inDate = fireDict.start;
   fireDict.timeInterval = 1;
   
-  var goesEast_confCol = getConfCol(fireDict,goes_east_no);
-  var goesWest_confCol = getConfCol(fireDict,goes_west_no);
+  var goesEast_col = goferFun.getGOEScol(inDate,'GOES-East');
+  var goesWest_col = goferFun.getGOEScol(inDate,'GOES-West');
+
+  var goesEast_confCol = getConfCol(fireDict,goesEast_col);
+  var goesWest_confCol = getConfCol(fireDict,goesWest_col);
   
   var fireNameYr = fireName.split(' ').join('_') + '_' + year;
   

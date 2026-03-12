@@ -522,7 +522,7 @@ var fireParamsList = {
       official: 97528,
       ignition: ee.Geometry.Point([-118.631,36.047]),
       AOI: ee.Geometry.Rectangle([-118.80,35.82,-118.44,36.17]),
-      stDate: 'September 9th, 2021 5:45 PM', // InciWeb
+      stDate: 'September 9, 2021 5:45 PM', // InciWeb
       start: ee.Date.parse('Y-MM-dd HH','2021-09-10 00'), 
       end: ee.Date.parse('Y-MM-dd HH','2021-10-06 01'),
       nHour: 625,

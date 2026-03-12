@@ -11,11 +11,11 @@
 var fireName = 'Creek';
 var year = '2020';
 
-var goesEast_no = '16';
-var goesWest_no = '17';
-
 // Metadata
 var fireInfo = require('users/embrslab/GOFER:largeFires_metadata.js');
+
+// GOFER functions
+var goferFun = require('users/embrslab/GOFER:GOFER_functions.js');
 
 var yrList = fireInfo.yrList;
 var fireYrList = fireInfo.fireYrList;
@@ -25,16 +25,19 @@ var fireParamsList = fireInfo.fireParamsList;
 var fireParamsYrList = fireParamsList[year];
 var fireDict = fireParamsYrList[fireName];
 var fireNameYr = fireName.split(' ').join('_') + '_' + year;
+var inDate = fireDict.start;
 
 // Input AOI
 // can replace this with a custom geometry
 var AOI = fireDict.AOI; 
 
-var goesEast_col = ee.ImageCollection('NOAA/GOES/' + goesEast_no + '/FDCF');
-var goesWest_col = ee.ImageCollection('NOAA/GOES/' + goesWest_no + '/FDCF');
+var goesEast_col = goferFun.getGOEScol(inDate,'GOES-East');
+var goesWest_col = goferFun.getGOEScol(inDate,'GOES-West');
 
-var goesEast_confidence = goesEast_col.filterDate('2020-09-01','2020-09-02').first();
-var goesWest_confidence = goesWest_col.filterDate('2020-09-01','2020-09-02').first();
+var goesEast_confidence = goesEast_col
+  .filterDate(inDate,inDate.advance(1,'day')).first();
+var goesWest_confidence = goesWest_col
+  .filterDate(inDate,inDate.advance(1,'day')).first();
 
 var goesEastproj = goesEast_confidence.projection();
 var goesWestproj = goesWest_confidence.projection();
@@ -106,14 +109,15 @@ var goesWest_randVec_shade = goesWest_randVec.map(function(grid) {
 Map.addLayer(ee.Image().byte()
   .paint(goesEast_randVec,0,1)
   .paint(goesEast_randVec_shade.filter(ee.Filter.eq('shade',1)),0),
-  {palette: ['black'], opacity:0.5});
+  {palette: ['black'], opacity:0.5}, 'GOES-East');
 Map.addLayer(ee.Image().byte()
   .paint(goesWest_randVec,0,1)
   .paint(goesWest_randVec_shade.filter(ee.Filter.eq('shade',1)),0),
-  {palette: ['red'], opacity:0.5});
-Map.addLayer(combined_randVec);
+  {palette: ['red'], opacity:0.5}, 'GOES-West');
+Map.addLayer(combined_randVec, {}, 'GOES-Combined');
 Map.centerObject(AOI);
 
+print('Kernels:','GOES-East','GOES-West','GOES-Combined');
 print(get_kernelRes(goesEast_randVec),
   get_kernelRes(goesWest_randVec),
   get_kernelRes(combined_randVec));
